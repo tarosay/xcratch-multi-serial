@@ -3321,7 +3321,9 @@ var SerialChannel = /*#__PURE__*/function () {
   }, {
     key: "_endLine",
     value: function _endLine() {
-      var line = this._pending;
+      // 末尾の空白は取り除く。MakeCode の「1行書き出す」は、行を 32 バイトの区切りに
+      // 揃えるため末尾に空白を詰めて送るので、残すと (1行読む) = A が成り立たない。
+      var line = this._pending.replace(/ +$/, '');
       this._pending = '';
       if (this._discardFirst) {
         this._discardFirst = false;
