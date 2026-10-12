@@ -204,9 +204,9 @@ const message = {
     stateReceiving: {'ja': '受信中', 'ja-Hira': 'じゅしんちゅう', 'en': 'receiving'},
     stateCancelled: {'ja': '選ばれませんでした', 'ja-Hira': 'えらばれませんでした', 'en': 'no port was chosen'},
     stateNeedClick: {
-        'ja': 'ブロックをクリックしてください',
-        'ja-Hira': 'ブロックを クリックして ください',
-        'en': 'click the block to start'
+        'ja': '画面をクリックしてください',
+        'ja-Hira': 'がめんを クリックして ください',
+        'en': 'click anywhere on the page'
     },
     stateDuplicate: {
         'ja': 'ほかの番号で使っています',
@@ -309,6 +309,40 @@ class Scratch3MultiSerial {
                 this.channels.forEach(channel => channel.portLost(event.target));
             });
         }
+
+        /**
+         * ダイアログを出せずに、次のクリックを待っている「開始する」。待ち始めた順。
+         * (仕様書「ダイアログを出せなかったら、次のクリックを待つ」)
+         * @type {Array<{index: number, baudRate: number, resolve: Function}>}
+         */
+        this._clickWaiters = [];
+
+        /**
+         * まだどの「開始する」もダイアログに使っていないクリックがあるか。
+         *
+         * 1 回のクリックにつき、ダイアログは 1 回しか出そうとしない。1 つ目のダイアログを
+         * 閉じた直後に 2 つ目を出そうとすると、実機では失敗の仕方が当てにならなかった
+         * (キャンセル扱いになったり、1 つ目と同じポートが返ったりした。仕様書
+         * 「ダイアログを出せなかったら、次のクリックを待つ」)。
+         * @type {boolean}
+         */
+        this._clickUnused = false;
+
+        // ページのどこかがクリックされたら覚えておき、待っている「開始する」があれば
+        // そのダイアログを 1 つ出す。緑の旗や「開始する」ブロックのクリックもここを通る。
+        //
+        // capture で拾うのは、ページの部品が伝わりを止めても取りこぼさないため。
+        // setTimeout(0) で一拍おくのは、止めるボタンのクリックだった場合に、
+        // そちらの処理 (PROJECT_STOP_ALL で待ちを取り消す) を先に済ませるため。
+        // ダイアログは操作の直後なら出せるので、一拍おいても間に合う。
+        if (typeof window !== 'undefined') {
+            window.addEventListener('click', () => {
+                this._clickUnused = true;
+                setTimeout(() => this._serveClickWaiter(), 0);
+            }, true);
+        }
+        // 止めるボタンで待ちを取り消す。通信そのものは閉じない (仕様書「止めるボタン」)。
+        runtime.on('PROJECT_STOP_ALL', () => this._cancelClickWaiters());
 
         // ハットブロックは isEdgeActivated: false なので、VM は見に来ない。
         // 読まれていない行がある番号のハットを、ここから起こす。
@@ -621,6 +655,9 @@ class Scratch3MultiSerial {
     /**
      * ダイアログでポートを選ばせ、この番号に割り当てて開く (仕様書「3. 開始・終了の動き」)。
      *
+     * 受信中の番号では何もしない。「受け取ったとき」や「ずっと」の中に置かれると
+     * くり返し呼ばれるので、そのたびにダイアログを出すと使えなくなる。
+     *
      * ⚠ requestPort() より前に await を置かないこと。ダイアログは利用者の操作の直後
      *   (transient activation) にしか出せないので、待つとその間に切れるおそれがある。
      * @param {object} args - CH, BAUD
@@ -628,40 +665,20 @@ class Scratch3MultiSerial {
      */
     openChannel (args) {
         const index = this._index(args.CH);
-        if (index < 0 || this.busy[index]) return;
-        const channel = this.channels[index];
-        // 受信中の番号では、キャンセルなどの結果で状態を変えない。
-        // 押し間違えてキャンセルしただけで、続いている受信の表示が変わらないようにするため。
-        const setState = state => {
-            if (!channel.isOpen()) this.states[index] = state;
-        };
+        if (index < 0 || this.busy[index] || this.channels[index].isOpen()) return;
 
         if (typeof navigator === 'undefined' || !navigator.serial) {
-            setState('unsupported');
+            this.states[index] = 'unsupported';
             return;
         }
         const baudRate = Cast.toNumber(args.BAUD);
         if (!Number.isInteger(baudRate) || baudRate <= 0) {
             console.warn(`[multiSerial] invalid baud rate: ${args.BAUD}`);
-            setState('openFailed');
+            this.states[index] = 'openFailed';
             return;
         }
         this.busy[index] = true;
-        setState('choosing');
-        return navigator.serial.requestPort()
-            .then(
-                port => this._assign(index, port, baudRate),
-                error => {
-                    // キャンセルは NotFoundError。緑の旗から実行したなど、
-                    // 利用者の操作の直後でないときは SecurityError。
-                    if (error && error.name === 'NotFoundError') {
-                        setState('cancelled');
-                    } else {
-                        console.warn('[multiSerial] requestPort failed:', error);
-                        setState('needClick');
-                    }
-                }
-            )
+        return this._choosePort(index, baudRate)
             .catch(error => {
                 // ここで拾わないと busy が戻らず、その番号を二度と開始できなくなる
                 console.warn('[multiSerial] openChannel failed:', error);
@@ -672,6 +689,73 @@ class Scratch3MultiSerial {
     }
 
     /**
+     * ダイアログを出して、選ばれたポートを開く。
+     * ダイアログを出せなければ、次のクリックを待ってからやり直す。
+     * @param {number} index - 添字
+     * @param {number} baudRate - ボーレート
+     * @returns {Promise<void>} 開き終わるか、あきらめたら解決する
+     */
+    _choosePort (index, baudRate) {
+        // 前のクリックをほかの「開始する」が使った。ダイアログを出そうとせずに次のクリックを待つ。
+        // 緑の旗の下に「開始する」を 2 つ置くと、2 つ目はここに来る。
+        if (!this._clickUnused) return this._waitForClick(index, baudRate);
+        this._clickUnused = false;
+        this.states[index] = 'choosing';
+        return navigator.serial.requestPort().then(
+            port => this._assign(index, port, baudRate),
+            error => {
+                // キャンセルは NotFoundError
+                if (error && error.name === 'NotFoundError') {
+                    this.states[index] = 'cancelled';
+                    return;
+                }
+                // クリックから時間が経っていると SecurityError (「〇秒待つ」の後など)。
+                // 次のクリックを待つ。
+                if (error && error.name === 'SecurityError') return this._waitForClick(index, baudRate);
+                console.warn('[multiSerial] requestPort failed:', error);
+                this.states[index] = 'openFailed';
+            }
+        );
+    }
+
+    /**
+     * 次のクリックを待つ。クリックされたら _serveClickWaiter() がダイアログを出す。
+     * @param {number} index - 添字
+     * @param {number} baudRate - ボーレート
+     * @returns {Promise<void>} 開き終わるか、あきらめたら解決する
+     */
+    _waitForClick (index, baudRate) {
+        this.states[index] = 'needClick';
+        return new Promise(resolve => {
+            this._clickWaiters.push({index, baudRate, resolve});
+        });
+    }
+
+    /**
+     * クリックされた。待っている「開始する」の先頭について、ダイアログを出し直す。
+     * 1 クリックで出せるダイアログは 1 つなので、1 つだけ出す。
+     * @returns {void}
+     */
+    _serveClickWaiter () {
+        const waiter = this._clickWaiters.shift();
+        if (!waiter) return;
+        this._choosePort(waiter.index, waiter.baudRate).then(waiter.resolve, waiter.resolve);
+    }
+
+    /**
+     * 待っている「開始する」をすべてやめる (止めるボタン)。
+     * @returns {void}
+     */
+    _cancelClickWaiters () {
+        const waiters = this._clickWaiters;
+        this._clickWaiters = [];
+        waiters.forEach(waiter => {
+            this.states[waiter.index] = 'notStarted';
+            waiter.resolve();
+        });
+    }
+
+    /**
      * 選ばれたポートをこの番号で開く。
      * @param {number} index - 添字
      * @param {SerialPort} port - 選ばれたポート
@@ -679,19 +763,13 @@ class Scratch3MultiSerial {
      * @returns {Promise<void>} 終わったら解決する
      */
     async _assign (index, port, baudRate) {
-        const channel = this.channels[index];
-        const usedElsewhere = this.channels.some((other, i) => i !== index && other.port === port);
-        if (usedElsewhere) {
+        if (this.channels.some((other, i) => i !== index && other.port === port)) {
             console.warn(`[multiSerial] the port is already used by another number (serial ${index + 1})`);
-            // 受信中なら何も変えない (状態も「受信中」のまま)
-            if (!channel.isOpen()) this.states[index] = 'duplicate';
+            this.states[index] = 'duplicate';
             return;
         }
-        // 古いポートは、新しいポートが選ばれてから閉じる。同じポートを選び直したときも
-        // 閉じて開き直す (ボーレートを変えるには開き直すしかないため)。
-        await channel.stop();
         try {
-            await channel.start(port, baudRate);
+            await this.channels[index].start(port, baudRate);
             this.states[index] = 'receiving';
         } catch (error) {
             // ほかのアプリ (MakeCode やシリアルモニタなど) が使っていると、ここで失敗する
@@ -703,6 +781,12 @@ class Scratch3MultiSerial {
     closeChannel (args) {
         const index = this._index(args.CH);
         if (index < 0) return;
+        // クリックを待っている「開始する」も取り消す。残すと、次のクリックでダイアログが出てしまう
+        this._clickWaiters = this._clickWaiters.filter(waiter => {
+            if (waiter.index !== index) return true;
+            waiter.resolve();
+            return false;
+        });
         return this.channels[index].stop().then(() => {
             this.states[index] = 'notStarted';
         });
