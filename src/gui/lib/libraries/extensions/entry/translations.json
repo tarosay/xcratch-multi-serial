@@ -1,14 +1,14 @@
 {
   "en": {
     "multiSerial.entry.name": "Multi Serial Connection",
-    "multiSerial.entry.description": "Receive data from several serial ports at once. Chrome or Edge is required."
+    "multiSerial.entry.description": "Receive data from several serial ports at once. Chrome, Edge or Firefox is required."
   },
   "ja": {
     "multiSerial.entry.name": "マルチシリアル接続",
-    "multiSerial.entry.description": "いくつものシリアルポートから同時にデータを受け取ります。Chrome か Edge が必要です。"
+    "multiSerial.entry.description": "いくつものシリアルポートから同時にデータを受け取ります。Chrome・Edge・Firefox のどれかが必要です。"
   },
   "ja-Hira": {
     "multiSerial.entry.name": "マルチシリアルせつぞく",
-    "multiSerial.entry.description": "いくつもの シリアルポートから どうじに データを うけとります。Chrome か Edge が ひつようです。"
+    "multiSerial.entry.description": "いくつもの シリアルポートから どうじに データを うけとります。Chrome・Edge・Firefox の どれかが ひつようです。"
   }
 }

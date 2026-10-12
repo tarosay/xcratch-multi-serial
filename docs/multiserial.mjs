@@ -4,18 +4,18 @@ var img$2 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width=
 
 var en = {
 	"multiSerial.entry.name": "Multi Serial Connection",
-	"multiSerial.entry.description": "Receive data from several serial ports at once. Chrome or Edge is required."
+	"multiSerial.entry.description": "Receive data from several serial ports at once. Chrome, Edge or Firefox is required."
 };
 var ja = {
 	"multiSerial.entry.name": "マルチシリアル接続",
-	"multiSerial.entry.description": "いくつものシリアルポートから同時にデータを受け取ります。Chrome か Edge が必要です。"
+	"multiSerial.entry.description": "いくつものシリアルポートから同時にデータを受け取ります。Chrome・Edge・Firefox のどれかが必要です。"
 };
 var translations = {
 	en: en,
 	ja: ja,
 	"ja-Hira": {
 	"multiSerial.entry.name": "マルチシリアルせつぞく",
-	"multiSerial.entry.description": "いくつもの シリアルポートから どうじに データを うけとります。Chrome か Edge が ひつようです。"
+	"multiSerial.entry.description": "いくつもの シリアルポートから どうじに データを うけとります。Chrome・Edge・Firefox の どれかが ひつようです。"
 }
 };
 
@@ -60,11 +60,11 @@ var entry = {
   iconURL: img$3,
   insetIconURL: img$2,
   get description() {
-    // 対応ブラウザを書いておくのは、Firefox などでも拡張は追加できてブロックも並び、
+    // 対応ブラウザを書いておくのは、Safari などでも拡張は追加できてブロックも並び、
     // 開始のときに初めて使えないと分かるため (お手本の createEntry.js と同じ理由)。
     return "".concat(formatMessage$2({
       id: 'multiSerial.entry.description',
-      defaultMessage: 'Receive data from several serial ports at once. Chrome or Edge is required.',
+      defaultMessage: 'Receive data from several serial ports at once. Chrome, Edge or Firefox is required.',
       description: 'description of the extension'
     }), " (").concat(version, ")");
   },

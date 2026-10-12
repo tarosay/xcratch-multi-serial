@@ -41,11 +41,11 @@ const entry = {
     iconURL: iconURL,
     insetIconURL: insetIconURL,
     get description () {
-        // 対応ブラウザを書いておくのは、Firefox などでも拡張は追加できてブロックも並び、
+        // 対応ブラウザを書いておくのは、Safari などでも拡張は追加できてブロックも並び、
         // 開始のときに初めて使えないと分かるため (お手本の createEntry.js と同じ理由)。
         return `${formatMessage({
             id: 'multiSerial.entry.description',
-            defaultMessage: 'Receive data from several serial ports at once. Chrome or Edge is required.',
+            defaultMessage: 'Receive data from several serial ports at once. Chrome, Edge or Firefox is required.',
             description: 'description of the extension'
         })} (${version})`;
     },

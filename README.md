@@ -12,7 +12,7 @@ micro:bit 2 台を同時につなぎ、それぞれから受信できること�
 
 ## 使い方
 
-Chrome か Edge で [Xcratch エディタ](https://xcratch.github.io/editor/) を開き、
+Chrome・Edge・Firefox のどれかで [Xcratch エディタ](https://xcratch.github.io/editor/) を開き、
 「拡張機能を追加」→「Extension Loader」に次の URL を入れます。
 
 ```
@@ -60,8 +60,8 @@ micro:bit の MakeCode 側は `シリアル通信 1行書き出す` か `シリ�
 
 ## 必要なもの
 
-- **Chrome か Edge。** シリアルポートとの通信に Web Serial API を使います。
-  Firefox と Safari には Web Serial API がありません。
+- **Chrome・Edge、または Firefox 151 以降（パソコン版）。** シリアルポートとの通信に Web Serial API を使います。
+  Safari は対応していません（2026年10月時点）。
 
 ---
 
@@ -129,7 +129,7 @@ npm run build
 npx --yes live-server "D:\git\github\xcratch-multi-serial\dist" --host=127.0.0.1 --port=5500 --cors --no-browser
 ```
 
-Chrome か Edge で次の URL を開きます。
+Chrome・Edge・Firefox のどれかで次の URL を開きます。
 
 ```
 https://xcratch.github.io/editor/?extension=http://127.0.0.1:5500/multiserial.mjs
