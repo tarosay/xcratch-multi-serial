@@ -11,3 +11,7 @@ ignore/
 # ビルドで作られるもの。
 node_modules/
 dist/
+
+# setup-dev.mjs が張る scratch-vm へのリンク。実体は scratch-vm 側にある。
+/src/vm/extension-support
+/src/vm/util

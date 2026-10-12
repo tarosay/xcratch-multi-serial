@@ -43,6 +43,44 @@ Web Serial API の仕様によるもので、拡張機能の作りでは避け�
 
 ---
 
+## 開発
+
+ブロックの仕様は [`docs/xcratch-multi-serial-blocks-spec.md`](docs/xcratch-multi-serial-blocks-spec.md) にあります。
+作りは [scratch3-uiapduino](https://github.com/tarosay/scratch3-uiapduino) の Xcratch 版に倣っています。
+
+### ビルド
+
+Node.js v20 以降が要ります（rollup 4 の都合）。
+
+```powershell
+npm install
+npm run setup-dev -- <scratch-vm を clone した場所>
+npm run build
+```
+
+`setup-dev` は、scratch-vm から `ArgumentType` / `BlockType` / `Cast` を借りるためのリンクを
+`src/vm/` の下に張ります。最初に一度だけ実行します。
+
+`npm run build` は `dist/multiserial.mjs` を作り、それを `docs/` へ置きます。
+**`docs/` は GitHub Pages の公開元なので、試しにビルドしただけでも公開物が更新されます。**
+公開したくない変更はコミットしないでください。
+
+### 手元で試す
+
+`dist` を CORS 付きで配ります。**配るのは `dist` だけにし、絶対パスで渡してください。**
+
+```powershell
+npx --yes live-server "D:\git\github\xcratch-multi-serial\dist" --host=127.0.0.1 --port=5500 --cors --no-browser
+```
+
+Chrome か Edge で次の URL を開きます。
+
+```
+https://xcratch.github.io/editor/?extension=http://127.0.0.1:5500/multiserial.mjs
+```
+
+---
+
 ## ライセンス
 
 [MIT License](LICENSE)
