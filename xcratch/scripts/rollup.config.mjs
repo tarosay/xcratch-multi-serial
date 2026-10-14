@@ -19,6 +19,9 @@ import importImage from '@rollup/plugin-image';
 import multi from '@rollup/plugin-multi-entry';
 import json from '@rollup/plugin-json';
 
+// src/vm/extensions/block の中身は sync-block.mjs が置いた複製。
+// 実体はこのリポジトリの scratch-vm/src/extensions/scratch3_multiserial で、
+// デスクトップ版とまったく同じファイルをビルドしている。
 export default {
     input: [
         path.resolve(process.cwd(), './src/gui/lib/libraries/extensions/entry/index.jsx'),

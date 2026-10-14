@@ -6,6 +6,9 @@
 // 「シリアル通信 1」〜「シリアル通信 8」の 8 つを持つ。1 つぶんの通信と受信の溜めは
 // serialChannel.js。ここではダイアログを出してポートを番号に割り当てることと、
 // ブロックの引数の読み替えだけをする。
+//
+// このファイルは Xcratch 版 (xcratch/ の rollup) とデスクトップ版 (scratch-desktop の webpack) の
+// 両方でビルドされる。直すのは常にここ。xcratch/src/vm/extensions/block/ は複製。
 
 import ArgumentType from '../../extension-support/argument-type';
 import BlockType from '../../extension-support/block-type';
@@ -13,30 +16,15 @@ import Cast from '../../util/cast';
 import defaultFormatMessage from 'format-message';
 
 import SerialChannel, {NEWLINE} from './serialChannel';
-import blockIconSvgURI from './block-icon.svg';
-import menuIconSvgURI from './menu-icon.svg';
+// 絵は SVG を直接 import しない。rollup と webpack で import した値の形が違うため。
+// 理由は xcratch/scripts/embed-icons.mjs の冒頭にある。
+import {blockIconURI, menuIconURI} from './icons';
 
 /**
- * rollup の image プラグインが作る SVG の data URI を base64 の形に直す。
- *
- * プラグインは SVG を `data:image/svg+xml,%3csvg xmlns='...' width='40' ...` のように
- * 読める形のまま埋め込む。ところが scratch-blocks は、左のカテゴリ一覧のアイコンを
- * `style.backgroundImage = 'url(' + iconURI + ')'` と引用符なしで CSS に書く
- * (scratch-blocks の core/toolbox.js)。URI の中の空白と ' で CSS が壊れ、
- * アイコンが描かれずに白い丸だけが残った (2026-10-13 に実機で確認)。
- * base64 なら空白も引用符も入らない。
- *
- * SVG は ASCII だけで書いてあるので、btoa にそのまま渡せる。
- * @param {string} uri - プラグインが作った data URI
- * @returns {string} base64 の data URI
- */
-const toBase64URI = uri => `data:image/svg+xml;base64,${btoa(decodeURIComponent(uri.slice(uri.indexOf(',') + 1)))}`;
-
-const blockIconURI = toBase64URI(blockIconSvgURI);
-const menuIconURI = toBase64URI(menuIconSvgURI);
-
-/**
- * 拡張 ID。entry の extensionId と同じ値。
+ * 拡張 ID。次の 3 つと同じ値にすること。
+ *   - Xcratch 版の entry の extensionId (xcratch/src/gui/lib/libraries/extensions/entry/index.jsx)
+ *   - デスクトップ版の builtinExtensions のキー (scratch-vm/src/extension-support/extension-manager.js)
+ *   - デスクトップ版のカードの extensionId (scratch-gui/src/lib/libraries/extensions/index.jsx)
  *
  * ⚠ 作品に書き込まれるので、公開したら二度と変えられない。
  *   ハットブロックの opcode (`multiSerial_whenReceived`) の頭にも付く。
@@ -45,7 +33,8 @@ const menuIconURI = toBase64URI(menuIconSvgURI);
 const EXTENSION_ID = 'multiSerial';
 
 /**
- * このモジュールの公開 URL。entry の extensionURL と同じ値。
+ * このモジュールの公開 URL。Xcratch 版の entry の extensionURL と同じ値。
+ * デスクトップ版では使わない (拡張は本体に組み込まれていて、URL から読まない)。
  *
  * ⚠ 公開したら二度と変えられない。Xcratch は作品にこの URL を書き込み、
  *   次に開くときここから読み直す。変えると、変える前に保存された作品が開けなくなる。
@@ -108,7 +97,8 @@ let formatMessage = defaultFormatMessage;
  * @type {object}
  */
 const message = {
-    // カテゴリの見出し。entry の訳文 (translations.json) と同じ文言
+    // カテゴリの見出し。Xcratch 版の entry の訳文 (translations.json) と、
+    // デスクトップ版のカードの訳文 (scratch-gui/.../multiserial/messages.js) と同じ文言
     extensionName: {
         'ja': 'マルチシリアル接続',
         'ja-Hira': 'マルチシリアルせつぞく',

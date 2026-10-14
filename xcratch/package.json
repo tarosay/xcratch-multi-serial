@@ -1,13 +1,17 @@
 {
   "name": "xcx-multiserial",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Multi Serial Connection extension for Xcratch",
   "license": "MIT",
   "private": true,
   "scripts": {
     "setup-dev": "node ./scripts/setup-dev.mjs",
+    "sync-block": "node ./scripts/sync-block.mjs",
+    "embed-icons": "node ./scripts/embed-icons.mjs",
+    "prebuild": "npm run sync-block",
     "build": "rollup -c ./scripts/rollup.config.mjs",
     "postbuild": "node ./scripts/publish-docs.mjs",
+    "prewatch": "npm run sync-block",
     "watch": "rollup -c ./scripts/rollup.config.mjs --watch"
   },
   "devDependencies": {

@@ -5,12 +5,16 @@
  * Xcratch は読み込み時に setFormatMessage で自分の formatMessage を渡してくるので、
  * 名前と説明は getter にして、そのときの言語で返す。
  *
+ * デスクトップ版の scratch-gui/src/lib/libraries/extensions/index.jsx に相当する。
+ * 向こうは React 要素 (FormattedMessage) を返すが、こちらは文字列で作る。
+ *
  * 絵は仮のもの (docs/xcratch-multi-serial-blocks-spec.md の「9. ファイル構成」)。
- * rollup の image プラグインが data URI に変換して .mjs に埋め込む。
+ * デスクトップ版と同じ scratch-gui/src/lib/libraries/extensions/multiserial/ のものを直接参照している。
+ * rollup の image プラグインが data URI に変換して .mjs に埋め込むので、複製は要らない。
  */
 
-import iconURL from './card.svg';
-import insetIconURL from './inset-icon.svg';
+import iconURL from '../../../../../../../scratch-gui/src/lib/libraries/extensions/multiserial/card.svg';
+import insetIconURL from '../../../../../../../scratch-gui/src/lib/libraries/extensions/multiserial/inset-icon.svg';
 import translations from './translations.json';
 import {version as packageVersion} from '../../../../../../package.json';
 
@@ -32,7 +36,7 @@ const entry = {
             description: 'name of the extension'
         });
     },
-    // ⚠ src/vm/extensions/block/index.js の EXTENSION_ID と同じ値。
+    // ⚠ scratch-vm/src/extensions/scratch3_multiserial/index.js の EXTENSION_ID と同じ値。
     //   作品に書き込まれるので、公開したら二度と変えられない。
     extensionId: 'multiSerial',
     // ⚠ 同じく EXTENSION_URL と同じ値。公開したら二度と変えられない。

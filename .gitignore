@@ -8,10 +8,54 @@
 # 作業用ファイルの置き場。どの階層にあっても追跡しない。
 ignore/
 
-# ビルドで作られるもの。
-node_modules/
-dist/
+# --- デスクトップ版 ----------------------------------------------------
+# 上流リポジトリに被せるファイルだけを追跡する（ホワイトリスト方式）。
+# ビルド時に clone される scratch-vm / scratch-gui / scratch-desktop の
+# 本体は追跡しない。作りは scratch3-uiapduino と同じ。
 
-# setup-dev.mjs が張る scratch-vm へのリンク。実体は scratch-vm 側にある。
-/src/vm/extension-support
-/src/vm/util
+/scratch-vm/*
+!/scratch-vm/src
+/scratch-vm/src/*
+!/scratch-vm/src/extensions
+/scratch-vm/src/extensions/*
+!/scratch-vm/src/extensions/scratch3_multiserial
+!/scratch-vm/src/extension-support
+/scratch-vm/src/extension-support/*
+!/scratch-vm/src/extension-support/extension-manager.js
+
+/scratch-gui/*
+!/scratch-gui/src
+/scratch-gui/src/*
+!/scratch-gui/src/lib
+/scratch-gui/src/lib/*
+!/scratch-gui/src/lib/libraries
+/scratch-gui/src/lib/libraries/*
+!/scratch-gui/src/lib/libraries/extensions
+/scratch-gui/src/lib/libraries/extensions/*
+!/scratch-gui/src/lib/libraries/extensions/index.jsx
+!/scratch-gui/src/lib/libraries/extensions/multiserial
+
+# カードの訳文を scratch-l10n のメッセージへ重ねる。画面の言語を main プロセスへ知らせる
+!/scratch-gui/src/reducers
+/scratch-gui/src/reducers/*
+!/scratch-gui/src/reducers/locales.js
+
+# Web Serial の許可とポートの選択ダイアログのため、main プロセスにもパッチを当てる
+/scratch-desktop/*
+!/scratch-desktop/src
+/scratch-desktop/src/*
+!/scratch-desktop/src/main
+/scratch-desktop/src/main/*
+!/scratch-desktop/src/main/index.js
+
+# --- Xcratch 版 --------------------------------------------------------
+# src/vm の下は setup-dev.mjs が張るリンクと sync-block.mjs が置く複製で、
+# 実体は scratch-vm 側にある。追跡すると中身が二重に入る。
+#
+# dist/ も追跡しない。配るのは docs/ に置いたものだけで、
+# dist/ はその手前の中間成果物。両方持つと同じ .mjs が git に二重に入る。
+/xcratch/node_modules/
+/xcratch/dist/
+/xcratch/src/vm/extension-support
+/xcratch/src/vm/util
+/xcratch/src/vm/extensions/block

@@ -1,6 +1,6 @@
-var img$3 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='372' viewBox='0 0 600 372'%3e%3crect width='600' height='372' fill='%23E9EDF1'/%3e%3cg fill='none' stroke='%235C6E80' stroke-width='6' stroke-linecap='round'%3e%3cpath d='M150 66 C260 66 260 166 370 166'/%3e%3cpath d='M150 146 C260 146 260 176 370 176'/%3e%3cpath d='M150 226 C260 226 260 196 370 196'/%3e%3cpath d='M150 306 C260 306 260 206 370 206'/%3e%3c/g%3e%3cg fill='%235C6E80' stroke='%23455360' stroke-width='4'%3e%3crect x='60' y='40' width='90' height='52' rx='8'/%3e%3crect x='60' y='120' width='90' height='52' rx='8'/%3e%3crect x='60' y='200' width='90' height='52' rx='8'/%3e%3crect x='60' y='280' width='90' height='52' rx='8'/%3e%3crect x='370' y='116' width='170' height='130' rx='12'/%3e%3c/g%3e%3cg fill='white' font-family='sans-serif' font-size='30' font-weight='bold' text-anchor='middle'%3e%3ctext x='105' y='77'%3e1%3c/text%3e%3ctext x='105' y='157'%3e2%3c/text%3e%3ctext x='105' y='237'%3e3%3c/text%3e%3ctext x='105' y='317'%3e4%3c/text%3e%3c/g%3e%3crect x='390' y='136' width='130' height='80' rx='6' fill='%23E9EDF1'/%3e%3crect x='430' y='246' width='50' height='20' fill='%23455360'/%3e%3crect x='400' y='266' width='110' height='14' rx='7' fill='%23455360'/%3e%3c/svg%3e";
+var img$1 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='372' viewBox='0 0 600 372'%3e%3crect width='600' height='372' fill='%23E9EDF1'/%3e%3cg fill='none' stroke='%235C6E80' stroke-width='6' stroke-linecap='round'%3e%3cpath d='M150 66 C260 66 260 166 370 166'/%3e%3cpath d='M150 146 C260 146 260 176 370 176'/%3e%3cpath d='M150 226 C260 226 260 196 370 196'/%3e%3cpath d='M150 306 C260 306 260 206 370 206'/%3e%3c/g%3e%3cg fill='%235C6E80' stroke='%23455360' stroke-width='4'%3e%3crect x='60' y='40' width='90' height='52' rx='8'/%3e%3crect x='60' y='120' width='90' height='52' rx='8'/%3e%3crect x='60' y='200' width='90' height='52' rx='8'/%3e%3crect x='60' y='280' width='90' height='52' rx='8'/%3e%3crect x='370' y='116' width='170' height='130' rx='12'/%3e%3c/g%3e%3cg fill='white' font-family='sans-serif' font-size='30' font-weight='bold' text-anchor='middle'%3e%3ctext x='105' y='77'%3e1%3c/text%3e%3ctext x='105' y='157'%3e2%3c/text%3e%3ctext x='105' y='237'%3e3%3c/text%3e%3ctext x='105' y='317'%3e4%3c/text%3e%3c/g%3e%3crect x='390' y='136' width='130' height='80' rx='6' fill='%23E9EDF1'/%3e%3crect x='430' y='246' width='50' height='20' fill='%23455360'/%3e%3crect x='400' y='266' width='110' height='14' rx='7' fill='%23455360'/%3e%3c/svg%3e";
 
-var img$2 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 40 40'%3e%3ccircle cx='20' cy='20' r='19' fill='%235C6E80' stroke='%23455360' stroke-width='2'/%3e%3cg transform='translate(6 6) scale(0.7)'%3e%3cg fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='4' y='5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='16.5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='28' width='10' height='7' rx='1.5'/%3e%3cpath d='M14 8.5 C19 8.5 19 17 24 17'/%3e%3cpath d='M14 20 L24 20'/%3e%3cpath d='M14 31.5 C19 31.5 19 23 24 23'/%3e%3crect x='24' y='13' width='12' height='14' rx='2'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e";
+var img = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 40 40'%3e%3ccircle cx='20' cy='20' r='19' fill='%235C6E80' stroke='%23455360' stroke-width='2'/%3e%3cg transform='translate(6 6) scale(0.7)'%3e%3cg fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='4' y='5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='16.5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='28' width='10' height='7' rx='1.5'/%3e%3cpath d='M14 8.5 C19 8.5 19 17 24 17'/%3e%3cpath d='M14 20 L24 20'/%3e%3cpath d='M14 31.5 C19 31.5 19 23 24 23'/%3e%3crect x='24' y='13' width='12' height='14' rx='2'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e";
 
 var en = {
 	"multiSerial.entry.name": "Multi Serial Connection",
@@ -19,7 +19,7 @@ var translations = {
 }
 };
 
-var version$1 = "0.1.0";
+var version$1 = "0.2.0";
 
 /**
  * Xcratch の拡張機能一覧に出す情報。
@@ -28,8 +28,12 @@ var version$1 = "0.1.0";
  * Xcratch は読み込み時に setFormatMessage で自分の formatMessage を渡してくるので、
  * 名前と説明は getter にして、そのときの言語で返す。
  *
+ * デスクトップ版の scratch-gui/src/lib/libraries/extensions/index.jsx に相当する。
+ * 向こうは React 要素 (FormattedMessage) を返すが、こちらは文字列で作る。
+ *
  * 絵は仮のもの (docs/xcratch-multi-serial-blocks-spec.md の「9. ファイル構成」)。
- * rollup の image プラグインが data URI に変換して .mjs に埋め込む。
+ * デスクトップ版と同じ scratch-gui/src/lib/libraries/extensions/multiserial/ のものを直接参照している。
+ * rollup の image プラグインが data URI に変換して .mjs に埋め込むので、複製は要らない。
  */
 
 var version = "v".concat(version$1);
@@ -51,14 +55,14 @@ var entry = {
       description: 'name of the extension'
     });
   },
-  // ⚠ src/vm/extensions/block/index.js の EXTENSION_ID と同じ値。
+  // ⚠ scratch-vm/src/extensions/scratch3_multiserial/index.js の EXTENSION_ID と同じ値。
   //   作品に書き込まれるので、公開したら二度と変えられない。
   extensionId: 'multiSerial',
   // ⚠ 同じく EXTENSION_URL と同じ値。公開したら二度と変えられない。
   extensionURL: 'https://tarosay.github.io/xcratch-multi-serial/multiserial.mjs',
   collaborator: 'tarosay',
-  iconURL: img$3,
-  insetIconURL: img$2,
+  iconURL: img$1,
+  insetIconURL: img,
   get description() {
     // 対応ブラウザを書いておくのは、Safari などでも拡張は追加できてブロックも並び、
     // 開始のときに初めて使えないと分かるため (お手本の createEntry.js と同じ理由)。
@@ -3352,36 +3356,34 @@ var SerialChannel = /*#__PURE__*/function () {
   }]);
 }();
 
-var img$1 = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3cg fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='4' y='5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='16.5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='28' width='10' height='7' rx='1.5'/%3e%3cpath d='M14 8.5 C19 8.5 19 17 24 17'/%3e%3cpath d='M14 20 L24 20'/%3e%3cpath d='M14 31.5 C19 31.5 19 23 24 23'/%3e%3crect x='24' y='13' width='12' height='14' rx='2'/%3e%3c/g%3e%3c/svg%3e";
+// このファイルは xcratch/scripts/embed-icons.mjs が作る。手で直さない。
+//
+// 中身は scratch-gui/src/lib/libraries/extensions/multiserial/ の SVG を
+// base64 の data URI にしたもの。SVG を直したら、xcratch/ で
+//   node ./scripts/embed-icons.mjs
+// を走らせ、この生成物と docs/multiserial.mjs を一緒にコミットすること。
 
-var img = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3e%3ccircle cx='20' cy='20' r='19' fill='%235C6E80' stroke='%23455360' stroke-width='2'/%3e%3cg transform='translate(6 6) scale(0.7)'%3e%3cg fill='none' stroke='white' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3e%3crect x='4' y='5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='16.5' width='10' height='7' rx='1.5'/%3e%3crect x='4' y='28' width='10' height='7' rx='1.5'/%3e%3cpath d='M14 8.5 C19 8.5 19 17 24 17'/%3e%3cpath d='M14 20 L24 20'/%3e%3cpath d='M14 31.5 C19 31.5 19 23 24 23'/%3e%3crect x='24' y='13' width='12' height='14' rx='2'/%3e%3c/g%3e%3c/g%3e%3c/svg%3e";
+/**
+ * ブロックの頭の絵。元は block-icon.svg。
+ * @type {string}
+ */
+var blockIconURI = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH' + 'dpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48ZyBmaWxsPSJub25lIiBzdH' + 'Jva2U9IiNGRkZGRkYiIHN0cm9rZS13aWR0aD0iMi41IiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm' + '9rZS1saW5lam9pbj0icm91bmQiPjxyZWN0IHg9IjQiIHk9IjUiIHdpZHRoPSIxMCIgaGVpZ2h0PSI3Ii' + 'ByeD0iMS41Ii8+PHJlY3QgeD0iNCIgeT0iMTYuNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjciIHJ4PSIxLj' + 'UiLz48cmVjdCB4PSI0IiB5PSIyOCIgd2lkdGg9IjEwIiBoZWlnaHQ9IjciIHJ4PSIxLjUiLz48cGF0aC' + 'BkPSJNMTQgOC41IEMxOSA4LjUgMTkgMTcgMjQgMTciLz48cGF0aCBkPSJNMTQgMjAgTDI0IDIwIi8+PH' + 'BhdGggZD0iTTE0IDMxLjUgQzE5IDMxLjUgMTkgMjMgMjQgMjMiLz48cmVjdCB4PSIyNCIgeT0iMTMiIH' + 'dpZHRoPSIxMiIgaGVpZ2h0PSIxNCIgcng9IjIiLz48L2c+PC9zdmc+Cg==';
+
+/**
+ * カテゴリ一覧の絵。元は menu-icon.svg。
+ * @type {string}
+ */
+var menuIconURI = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIH' + 'dpZHRoPSI0MCIgaGVpZ2h0PSI0MCIgdmlld0JveD0iMCAwIDQwIDQwIj48Y2lyY2xlIGN4PSIyMCIgY3' + 'k9IjIwIiByPSIxOSIgZmlsbD0iIzVDNkU4MCIgc3Ryb2tlPSIjNDU1MzYwIiBzdHJva2Utd2lkdGg9Ij' + 'IiLz48ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSg2IDYpIHNjYWxlKDAuNykiPjxnIGZpbGw9Im5vbmUiIH' + 'N0cm9rZT0iI0ZGRkZGRiIgc3Ryb2tlLXdpZHRoPSIyLjUiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3' + 'Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iNCIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9Ij' + 'ciIHJ4PSIxLjUiLz48cmVjdCB4PSI0IiB5PSIxNi41IiB3aWR0aD0iMTAiIGhlaWdodD0iNyIgcng9Ij' + 'EuNSIvPjxyZWN0IHg9IjQiIHk9IjI4IiB3aWR0aD0iMTAiIGhlaWdodD0iNyIgcng9IjEuNSIvPjxwYX' + 'RoIGQ9Ik0xNCA4LjUgQzE5IDguNSAxOSAxNyAyNCAxNyIvPjxwYXRoIGQ9Ik0xNCAyMCBMMjQgMjAiLz' + '48cGF0aCBkPSJNMTQgMzEuNSBDMTkgMzEuNSAxOSAyMyAyNCAyMyIvPjxyZWN0IHg9IjI0IiB5PSIxMy' + 'Igd2lkdGg9IjEyIiBoZWlnaHQ9IjE0IiByeD0iMiIvPjwvZz48L2c+PC9zdmc+Cg==';
 
 function _createForOfIteratorHelper(r, e) { var t = "undefined" != typeof Symbol && r[Symbol.iterator] || r["@@iterator"]; if (!t) { if (Array.isArray(r) || (t = _unsupportedIterableToArray(r)) || e) { t && (r = t); var _n = 0, F = function F() {}; return { s: F, n: function n() { return _n >= r.length ? { done: true } : { done: false, value: r[_n++] }; }, e: function e(r) { throw r; }, f: F }; } throw new TypeError("Invalid attempt to iterate non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method."); } var o, a = true, u = false; return { s: function s() { t = t.call(r); }, n: function n() { var r = t.next(); return a = r.done, r; }, e: function e(r) { u = true, o = r; }, f: function f() { try { a || null == t.return || t.return(); } finally { if (u) throw o; } } }; }
 function _unsupportedIterableToArray(r, a) { if (r) { if ("string" == typeof r) return _arrayLikeToArray(r, a); var t = {}.toString.call(r).slice(8, -1); return "Object" === t && r.constructor && (t = r.constructor.name), "Map" === t || "Set" === t ? Array.from(r) : "Arguments" === t || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(t) ? _arrayLikeToArray(r, a) : void 0; } }
 function _arrayLikeToArray(r, a) { (null == a || a > r.length) && (a = r.length); for (var e = 0, n = Array(a); e < a; e++) n[e] = r[e]; return n; }
 
 /**
- * rollup の image プラグインが作る SVG の data URI を base64 の形に直す。
- *
- * プラグインは SVG を `data:image/svg+xml,%3csvg xmlns='...' width='40' ...` のように
- * 読める形のまま埋め込む。ところが scratch-blocks は、左のカテゴリ一覧のアイコンを
- * `style.backgroundImage = 'url(' + iconURI + ')'` と引用符なしで CSS に書く
- * (scratch-blocks の core/toolbox.js)。URI の中の空白と ' で CSS が壊れ、
- * アイコンが描かれずに白い丸だけが残った (2026-10-13 に実機で確認)。
- * base64 なら空白も引用符も入らない。
- *
- * SVG は ASCII だけで書いてあるので、btoa にそのまま渡せる。
- * @param {string} uri - プラグインが作った data URI
- * @returns {string} base64 の data URI
- */
-var toBase64URI = function toBase64URI(uri) {
-  return "data:image/svg+xml;base64,".concat(btoa(decodeURIComponent(uri.slice(uri.indexOf(',') + 1))));
-};
-var blockIconURI = toBase64URI(img$1);
-var menuIconURI = toBase64URI(img);
-
-/**
- * 拡張 ID。entry の extensionId と同じ値。
+ * 拡張 ID。次の 3 つと同じ値にすること。
+ *   - Xcratch 版の entry の extensionId (xcratch/src/gui/lib/libraries/extensions/entry/index.jsx)
+ *   - デスクトップ版の builtinExtensions のキー (scratch-vm/src/extension-support/extension-manager.js)
+ *   - デスクトップ版のカードの extensionId (scratch-gui/src/lib/libraries/extensions/index.jsx)
  *
  * ⚠ 作品に書き込まれるので、公開したら二度と変えられない。
  *   ハットブロックの opcode (`multiSerial_whenReceived`) の頭にも付く。
@@ -3390,7 +3392,8 @@ var menuIconURI = toBase64URI(img);
 var EXTENSION_ID = 'multiSerial';
 
 /**
- * このモジュールの公開 URL。entry の extensionURL と同じ値。
+ * このモジュールの公開 URL。Xcratch 版の entry の extensionURL と同じ値。
+ * デスクトップ版では使わない (拡張は本体に組み込まれていて、URL から読まない)。
  *
  * ⚠ 公開したら二度と変えられない。Xcratch は作品にこの URL を書き込み、
  *   次に開くときここから読み直す。変えると、変える前に保存された作品が開けなくなる。
@@ -3453,7 +3456,8 @@ var formatMessage = defaultFormatMessage;
  * @type {object}
  */
 var message = {
-  // カテゴリの見出し。entry の訳文 (translations.json) と同じ文言
+  // カテゴリの見出し。Xcratch 版の entry の訳文 (translations.json) と、
+  // デスクトップ版のカードの訳文 (scratch-gui/.../multiserial/messages.js) と同じ文言
   extensionName: {
     'ja': 'マルチシリアル接続',
     'ja-Hira': 'マルチシリアルせつぞく',

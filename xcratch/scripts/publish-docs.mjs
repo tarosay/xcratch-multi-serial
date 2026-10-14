@@ -24,7 +24,9 @@ import fs from 'fs-extra';
 
 const projectDir = process.cwd();
 const distDir = path.resolve(projectDir, 'dist');
-const docsDir = path.resolve(projectDir, 'docs');
+// xcratch/ の外 (リポジトリ直下の docs/)。公開元は xcratch/ の中に入れない。
+// 入れると「xcratch/」というビルドの都合が URL に焼き付く。
+const docsDir = path.resolve(projectDir, '../docs');
 
 // .mjs だけでなく .map も要る。.mjs の末尾が .map を参照しており、
 // 無いと開発者ツールを開いたときに 404 になる。

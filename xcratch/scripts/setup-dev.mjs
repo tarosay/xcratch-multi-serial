@@ -16,6 +16,9 @@
 // 使い方:
 //   node ./scripts/setup-dev.mjs <scratch-vm へのパス>
 //   省略時は ../scratch-vm を見る。
+//   ⚠ リポジトリの scratch-vm/ はデスクトップ版のオーバーレイで、上流の中身は無い。
+//     ビルドツリー (build-scratch3-multiserial.ps1 が clone したもの) の中の xcratch/ で
+//     走らせたときにだけ、省略で済む。
 
 import path from 'path';
 import fs from 'fs-extra';
@@ -25,6 +28,14 @@ const linkType = process.platform === 'win32' ? 'junction' : 'dir';
 const projectDir = process.cwd();
 const vmPath = process.argv[2] || '../scratch-vm';
 const vmSrc = path.resolve(projectDir, vmPath, 'src');
+
+// オーバーレイの scratch-vm/ (このリポジトリのもの) を指していないか。
+// src/ はあるが、借りたいファイルが無い。リンクは張れてもビルドで落ちるので、ここで止める。
+if (fs.existsSync(vmSrc) && !fs.existsSync(path.resolve(vmSrc, 'extension-support/argument-type.js'))) {
+    console.error(`上流の scratch-vm ではありません: ${vmSrc}`);
+    console.error('上流の scratch-vm を clone して、その場所を引数で渡してください。');
+    process.exit(1);
+}
 
 if (!fs.existsSync(vmSrc)) {
     console.error(`scratch-vm が見つかりません: ${vmSrc}`);

@@ -12,12 +12,12 @@ xcratch-multi-serial の実装仕様。
 
 | | 内容 |
 |---|---|
-| 動かす場所 | **Xcratch のみ**。デスクトップ版は作らない |
+| 動かす場所 | **Xcratch** と **デスクトップ版**（Scratch Desktop に組み込んだもの）。ブロックの実装は同じものを共有する（「9. ファイル構成」「12. デスクトップ版」） |
 | ブラウザ | **Chrome / Edge / Firefox 151 以降（パソコン版）**。Web Serial API を使う。Safari は対応していない（2026年10月時点） |
 | 相手の機器 | USB でつないだシリアル機器なら何でも。**主な用途は micro:bit の複数台接続** |
 | 通信の向き | **受信のみ**。送信と ACK などのハンドシェイクは組み込まない（「8. 将来の拡張」） |
 | 同時に扱う数 | **8**。番号は 1〜8 |
-| お手本 | [scratch3-uiapduino](https://github.com/tarosay/scratch3-uiapduino) の Xcratch 版（`xcratch/` 以下） |
+| お手本 | [scratch3-uiapduino](https://github.com/tarosay/scratch3-uiapduino)。Xcratch 版は `xcratch/` 以下、デスクトップ版はオーバーレイ方式 |
 
 ### 公開 URL と拡張 ID
 
@@ -467,48 +467,87 @@ scratch-vm は、入力欄（はめ込み口）を持つ値ブロックにはチ
 
 ## 9. ファイル構成
 
-お手本の Xcratch 版にならう。ただしデスクトップ版が無いので、お手本より単純になる。
+お手本（scratch3-uiapduino）と同じ作りにする（2026-10-14 に決定）。
+**ブロックの実装は 1 か所だけに置き、Xcratch 版とデスクトップ版の両方がそれをビルドする。**
 
-- 拡張本体を **このリポジトリの中に直接置く**。お手本のように scratch-vm 側から複製する
-  手順（`sync-block.mjs`）は要らない
-- `xcratch/` のような下位ディレクトリは作らず、**リポジトリの直下**に `package.json` を置く
+- 本体の置き場所は `scratch-vm/src/extensions/scratch3_multiserial/`。**直すのは常にここ**
+- Xcratch 版のビルド環境は `xcratch/` の下に置く。ビルドのたびに本体を `xcratch/src/vm/extensions/block/` へ
+  複製する（`sync-block.mjs`。複製は追跡しない）
+- デスクトップ版は、上流の scratch-vm / scratch-gui / scratch-desktop を clone した上に、
+  このリポジトリの中身を丸ごと被せてビルドする（オーバーレイ方式。「12. デスクトップ版」）
+
+最初の版（v0.1.0）は Xcratch 版しか無かったので、`package.json` も本体もリポジトリの直下に置いていた。
+デスクトップ版を足すときに上の形へ移した。直下に `package.json` や `src/` があると、
+オーバーレイでそれもビルド先へ被さってしまうため。
 
 ```
-package.json                                   バージョンと依存
-scripts/rollup.config.mjs                      entry と本体を 1 枚の .mjs にまとめる
-scripts/setup-dev.mjs                          scratch-vm へのリンクを張る（最初に一度）
-scripts/publish-docs.mjs                       成果物を docs/ へ置く（ビルドのたびに自動）
-src/gui/lib/libraries/extensions/entry/        一覧のカード（index.jsx / translations.json / 絵）
-src/vm/extensions/block/index.js               ブロックの定義
-src/vm/extensions/block/serialChannel.js       1 つの番号ぶんの通信と受信の溜め
-src/vm/extension-support  -> scratch-vm        setup-dev が張るリンク（追跡しない）
-src/vm/util               -> scratch-vm        setup-dev が張るリンク（追跡しない）
-dist/                                          中間成果物（追跡しない）
-docs/multiserial.mjs                           配るもの（GitHub Pages の公開元）
+scratch-vm/src/extensions/scratch3_multiserial/index.js          ブロックの定義
+scratch-vm/src/extensions/scratch3_multiserial/serialChannel.js  1 つの番号ぶんの通信と受信の溜め
+scratch-vm/src/extensions/scratch3_multiserial/icons.js          ブロックとカテゴリ一覧の絵 (base64)。自動生成
+scratch-vm/src/extension-support/extension-manager.js            上流へのパッチ
+scratch-gui/src/lib/libraries/extensions/index.jsx              上流へのパッチ
+scratch-gui/src/lib/libraries/extensions/multiserial/           絵の元（SVG）と、デスクトップ版のカードの訳文
+scratch-gui/src/reducers/locales.js                             上流へのパッチ
+scratch-desktop/src/main/index.js                               上流へのパッチ
+build-scratch3-multiserial.ps1                                  デスクトップ版のビルドスクリプト
+
+xcratch/package.json                                            バージョンと依存
+xcratch/scripts/setup-dev.mjs                                   scratch-vm へのリンクを張る（最初に一度）
+xcratch/scripts/sync-block.mjs                                  本体を複製する（ビルドのたびに自動）
+xcratch/scripts/embed-icons.mjs                                 SVG から icons.js を作る（絵を直したときだけ手で）
+xcratch/scripts/rollup.config.mjs                               entry と本体を 1 枚の .mjs にまとめる
+xcratch/scripts/publish-docs.mjs                                成果物を docs/ へ置く（ビルドのたびに自動）
+xcratch/src/gui/lib/libraries/extensions/entry/                 Xcratch の一覧のカード（index.jsx / translations.json）
+xcratch/src/vm/extension-support  -> scratch-vm                 setup-dev が張るリンク（追跡しない）
+xcratch/src/vm/util               -> scratch-vm                 setup-dev が張るリンク（追跡しない）
+xcratch/src/vm/extensions/block                                 本体の複製（追跡しない。触らない）
+xcratch/dist/                                                   中間成果物（追跡しない）
+
+docs/multiserial.mjs                                            配るもの（GitHub Pages の公開元）
 docs/multiserial.mjs.map
 ```
 
+**公開 URL は変わらない。** 配っているのは `docs/multiserial.mjs` で、`docs/` の場所は動かさない。
+
 `ArgumentType` / `BlockType` / `Cast` は、お手本と同じく scratch-vm からリンクで借りる。
-手元の scratch-vm は `D:\work\uiapduino-esm-test\scratch-vm`（お手本が今リンクしている場所）。
+デスクトップ版では本体が scratch-vm の中に置かれるので、同じ相対パス（`../../extension-support/...`）が
+そのまま解決する。
 
 GitHub Pages の公開元は **main ブランチの `/docs`** に設定する（ユーザー作業）。
 
 ### バージョン
 
-`package.json` の `version` を一覧のカードの説明の後ろに `(v0.1.0)` の形で出す（お手本と同じ）。
-初版は `0.1.0`。
+`xcratch/package.json` の `version` を一覧のカードの説明の後ろに `(v0.1.0)` の形で出す（お手本と同じ）。
+初版は `0.1.0`。デスクトップ版を足した版は `0.2.0`。
+
+**デスクトップ版のカードも同じ値を読む**（`scratch-gui/src/lib/libraries/extensions/index.jsx`）。
+番号は 1 か所にしか書かないので、Xcratch 版とデスクトップ版で番号がずれない。
 
 ### 絵
 
-一覧のカード（600x372）、カード左下の小さな絵（80x80）、ブロックの頭の絵が要る。
+一覧のカード（600x372）、カード左下の小さな絵（80x80）、ブロックの頭の絵、カテゴリ一覧の絵が要る。
 
 初版は仮の絵を作る（打ち合わせで決定）。差し替える絵があれば、それに替える。
 
-⚠ 左のカテゴリ一覧のアイコン（`menuIconURI`）は **base64 の data URI で渡す。**
-scratch-blocks はこれを `style.backgroundImage = 'url(' + iconURI + ')'` と引用符なしで
-CSS に書く（`core/toolbox.js`）。rollup の image プラグインは SVG を空白や `'` を含む
-読める形のまま埋め込むので、そのまま渡すと CSS が壊れて何も描かれない
-（2026-10-13 に実機で白い丸だけになった）。`index.js` の `toBase64URI()` で直している。
+絵の元はすべて `scratch-gui/src/lib/libraries/extensions/multiserial/` の SVG に置く。
+
+| 絵 | ファイル | 使い方 |
+|---|---|---|
+| 一覧のカード | `card.svg` | Xcratch 版の entry とデスクトップ版の `index.jsx` が、このファイルを直接読む |
+| カード左下の小さな絵 | `inset-icon.svg` | 同上 |
+| ブロックの頭 | `block-icon.svg` | `embed-icons.mjs` が base64 にして `icons.js` に書き出し、本体はそれを読む |
+| カテゴリ一覧 | `menu-icon.svg` | 同上 |
+
+⚠ ブロックの頭とカテゴリ一覧の絵は **base64 の data URI で渡す。** 理由は 2 つある。
+
+- scratch-blocks はカテゴリ一覧の絵を `style.backgroundImage = 'url(' + iconURI + ')'` と引用符なしで
+  CSS に書く（`core/toolbox.js`）。rollup の image プラグインは SVG を空白や `'` を含む
+  読める形のまま埋め込むので、そのまま渡すと CSS が壊れて何も描かれない
+  （2026-10-13 に実機で白い丸だけになった）。v0.1.0 では `index.js` の `toBase64URI()` で直していた
+- 本体はデスクトップ版の webpack でもビルドされる。そちらは SVG を data URI ではなくファイルの URL に変える
+  （scratch-desktop の `webpack.makeConfig.js` が `file-loader` を使う）ので、
+  `import` した値の形が rollup と違う。ただの `.js` にしておけば、どちらでも同じ値になる
+  （お手本の `sketchBin.js` と同じ考え方）
 
 ---
 
@@ -542,6 +581,21 @@ CSS に書く（`core/toolbox.js`）。rollup の image プラグインは SVG �
 - [x] Firefox でも動く（2026-10-13）。Firefox は 151（パソコン版）から Web Serial に対応した
   （Mozilla の発表、2026 年 5 月）。書き起こしの時点では「Firefox には無い」と書いていたが誤りだった
 
+### デスクトップ版
+
+- [ ] 一覧にカードが出て、追加するとブロックが並ぶ（`ja` / `ja-Hira` / `en`）
+- [ ] 「開始する」のクリックで、ポートの選択ダイアログが出る。選んだポートで受信中になる
+- [ ] ダイアログの「キャンセル」と、ダイアログを閉じたときに「選ばれませんでした」になる
+- [ ] ポートが 1 つも無いとき、「シリアルポートが見つかりません」が出る
+- [ ] 緑の旗の下に「開始する」を 2 つ置くと、2 つ目は「画面をクリックしてください」で待ち、
+  画面をクリックするとダイアログが出る
+- [ ] micro:bit を 2 台以上つなぎ、番号ごとに別々に受信できる
+- [ ] ケーブルを抜くと「切れました」になり、挿し直して開始し直せる
+- [ ] ダイアログの文言が画面の言語（`ja` / `ja-Hira` / `en`）で出る。言語を切り替えたら追従する
+- [ ] 閉じるときの確認が画面の言語で出る
+- [ ] Xcratch 版で保存した作品をデスクトップ版で開ける（逆も）
+- [ ] 公式の Scratch Desktop と並べて入れられる（上書きしない）
+
 ---
 
 ## 11. 書き起こしで決めた細部
@@ -559,9 +613,158 @@ CSS に書く（`core/toolbox.js`）。rollup の image プラグインは SVG �
 - ハットは「読まれていない行がある間」動く。中では「1行読む」を使う前提（「6. ハットブロック」）
 - 初版の絵は仮のものを作る（「9. ファイル構成」）
 
+### デスクトップ版（2026-10-14 に書き起こし。**了承待ち**）
+
+打ち合わせで決めたのは「お手本と同じ作り・同じリポジトリ・名前・ダイアログは `showMessageBox`」まで。
+次はそれを形にするときに決めたもの。
+
+- ポートの選択ダイアログの文言（「12. デスクトップ版」の表）
+- ボタンは「`<displayName> (<portName>)`」をポートの数だけと、最後に「キャンセル」。
+  Enter やスペースで決めたときはキャンセル（うっかりポートを選ばないように）
+- ポートが無いときは「見つかりません」のダイアログを出してキャンセル扱い
+- `setPermissionCheckHandler` で `serial` を本体のウィンドウの子フレームでないページに限る。
+  `setDevicePermissionHandler` は置かない
+- 閉じるときの確認（上流は英語の直書き）も画面の言語で出す。お手本がしていることで、
+  ポートのダイアログのために画面の言語を main プロセスへ知らせる仕組みを、そのまま使える
+- デスクトップ版のカードの説明には、ブラウザの話（「Chrome・Edge・Firefox のどれかが必要です」）を付けない
+- ビルドスクリプトに `-OverlaySource`（手元の作業ツリーを被せる）を付けた。お手本は同じことを
+  リポジトリの外の別スクリプト（`build-local.ps1`）でしている。1 本にまとめたのは、
+  確かめたスクリプトと配るスクリプトが別物にならないようにするため
+
+---
+
+## 12. デスクトップ版
+
+2026-10-14 に作ることを決めた（打ち合わせ）。それまでは「Xcratch のみ」としていた。
+
+### 作り
+
+お手本のデスクトップ版と同じ**オーバーレイ方式**。上流の 3 つを決まったタグで clone し、
+このリポジトリの中身（`.git` を除く）を丸ごと被せてビルドする。上流のタグはお手本と同じにする。
+
+| 上流 | タグ |
+|---|---|
+| scratch-vm | `0.2.0-prerelease.20220222132735` |
+| scratch-gui | `scratch-desktop-v3.29.0` |
+| scratch-desktop | `v3.29.1`（Electron 15.3.1） |
+
+上流のファイルに当てるパッチは次の 4 つ。**どれも上流のファイルを丸ごと上書きする。**
+
+| ファイル | 変更点 |
+|---|---|
+| `scratch-vm/src/extension-support/extension-manager.js` | `builtinExtensions` に `multiSerial` を 1 行足す |
+| `scratch-gui/src/lib/libraries/extensions/index.jsx` | 拡張機能の一覧にカードを足す |
+| `scratch-gui/src/reducers/locales.js` | カードの訳文を scratch-l10n のメッセージへ重ねる。画面の言語を main プロセスへ知らせる |
+| `scratch-desktop/src/main/index.js` | Web Serial の許可とポート選択ダイアログ。アプリの名前。閉じるときの確認を画面の言語で出す |
+
+お手本が当てている接続モーダルのパッチ（`connection-modal.jsx` など）は要らない。
+接続モーダルを使わないため（「1. Web Serial API による制約」）。
+
+### アプリの名前
+
+公式の Scratch Desktop や Scratch UIAPduino と同じ名前のままだと、インストールで上書きし合い、
+設定の保存先（`%APPDATA%`）も共有してしまう。そこで分ける（打ち合わせで決定、2026-10-14）。
+
+| | 値 |
+|---|---|
+| 表示名（`productName`） | `Scratch Multi Serial` |
+| `appId` | `com.github.tarosay.scratch-multi-serial` |
+| インストーラ | `Scratch-MultiSerial-<版>-Setup.exe` |
+| インストール不要版 | `Scratch-MultiSerial-<版>-portable.zip` |
+
+`<版>` は scratch-desktop の版（`3.29.1`）。拡張機能の版ではない（お手本と同じ）。
+
+### Electron の Web Serial で確かめたこと
+
+Electron 15.3.1 で、小さな試験用アプリを作って確かめた（2026-10-14）。
+
+- **`file://` で読み込んだページなら、`navigator.serial` はフラグなしで使える。**
+  `data:` の URL では無かった（安全なコンテキストではないため）。Scratch Desktop は `file://` で読み込む
+- **利用者の操作の直後でなければ、`requestPort()` は SecurityError になる。** Chrome と同じ。
+  そのため「ダイアログを出せなかったら、次のクリックを待つ」はデスクトップ版でもそのまま要る
+- 1 回の操作で `requestPort()` を 2 つ続けて呼ぶと、先の方が NotFoundError（キャンセルと同じ）になり、
+  後の方だけがダイアログを出した。この拡張機能は 1 回の操作で 1 つしか呼ばないので当たらない
+- **Electron はポートの選択ダイアログを出さない。** `requestPort()` を呼ぶと、main プロセスに
+  `select-serial-port` が来るだけ。ここで選ばないと、ポートは選ばれない
+- `setDevicePermissionHandler` を置かなくても（Electron の既定のままでも）、`false` を返すようにしても、
+  ダイアログで選んだポートは開ける。どちらでも `getPorts()` は、選んだ後も 0 件を返した
+  （この拡張機能は `getPorts()` を使わない）
+- `select-serial-port` で選ぶのを遅らせても（ダイアログの代わりに 1.5 秒待った）、`requestPort()` は待って、
+  選んだポートで解決する。そのため、選ぶ処理を非同期のダイアログにできる
+- 許可のチェック（`setPermissionCheckHandler`）は `requestPort()` のときに `serial` で呼ばれる。
+  呼び出し元のページと、`isMainFrame` が渡ってくる
+
+### ポートの選択ダイアログ
+
+main プロセスの `select-serial-port` で、`dialog.showMessageBox` を使ったダイアログを出す。
+本体のウィンドウを親にするので、開いている間は Scratch の画面を触れない。
+
+- ポート 1 つにつきボタンを 1 つ並べる。文字は `<displayName> (<portName>)`
+  （例: com0com の仮想ポートは `com0com - serial port emulator (COM8)`。2026-10-14 の試験で出た値）。
+  Chrome のダイアログと同じ並び。`displayName` が無いポートは `portName` だけ
+- 最後に「キャンセル」を置く。ダイアログを閉じたときもキャンセルと同じ
+- 選んだら、そのポートで `requestPort()` が解決する。キャンセルなら NotFoundError で返り、
+  状態は Xcratch 版と同じく「選ばれませんでした」になる
+- ポートが 1 つも無ければ、「シリアルポートが見つかりません」と「閉じる」だけのダイアログを出して、
+  キャンセルと同じに扱う
+
+文言は画面で選んでいる言語で出す。訳文があるのは `ja` と `ja-Hira` だけで、それ以外は英語。
+
+| | `ja` | `ja-Hira` | `en` |
+|---|---|---|---|
+| 見出し | シリアルポートを選んでください | シリアルポートを えらんでください | Choose a serial port |
+| キャンセル | キャンセル | キャンセル | Cancel |
+| 見つからない | シリアルポートが見つかりません | シリアルポートが みつかりません | No serial ports found |
+| 見つからないときの説明 | 機器をつないでから、もう一度開始してください。 | きかいを つないでから、もういちど かいし してください。 | Connect a device and start again. |
+| 閉じる | 閉じる | とじる | Close |
+
+**Chrome のダイアログと違い、開いている間にポートを挿しても一覧は変わらない。**
+出すときの一覧のまま。挿し直したらキャンセルして、もう一度開始する。
+
+### 許可
+
+- `setPermissionCheckHandler` … `serial` は本体のウィンドウの、子フレームでないページにだけ許す。
+  それ以外の種類は、ハンドラが無いときの Electron の既定どおり `true` を返す
+  （このハンドラを置くと全種類の既定を奪うため。お手本と同じ）
+- `setDevicePermissionHandler` … 置かない（Electron の既定のまま）。既定では、ダイアログで選ばずに
+  ポートを使うことはできない（Chrome でも、選んでいないポートは使えない）。お手本は WebHID で
+  `getDevices()` に基板を見せるために置いていたが、この拡張機能は `getPorts()` を使わないので要らない
+- `select-serial-port` は `on()` で足すとリスナが積み上がる。`createWindow` は本体・About・
+  プライバシーの 3 つのウィンドウで呼ばれ、同じ session を共有するので、
+  1 つの session に一度だけ登録する（お手本の `setupWebHid()` と同じ理由）
+
+### カード
+
+一覧の先頭に出す（`featured: true`）。名前と説明は Xcratch 版と同じ文言を使う。
+ただし説明の後ろのブラウザの話（「Chrome・Edge・Firefox のどれかが必要です」）は、
+デスクトップ版には当てはまらないので付けない。
+
+`launchPeripheralConnectionFlow` は `false`（接続モーダルを使わない）。
+
+### ビルド
+
+Windows の PowerShell で `build-scratch3-multiserial.ps1` を走らせる。**Node.js は v16**
+（webpack 4 の都合。お手本と同じ）。Xcratch 版のビルドは v20 以降なので、切り替えが要る。
+
+デスクトップ版のカードは `xcratch/package.json` の版を読むので、ビルドツリーの一番上に
+`xcratch/` が無いとビルドが止まる。オーバーレイでリポジトリを丸ごと被せるので、普通は気にしなくてよい。
+
 ---
 
 ## 修正履歴
+
+### 2026-10-14 — デスクトップ版を足した
+
+「Xcratch のみ」としていたのを、デスクトップ版（Scratch Desktop に組み込んだもの）も作ることにした
+（打ち合わせで決定）。お手本の scratch3-uiapduino と同じ作りにする。
+
+- 本体を `scratch-vm/src/extensions/scratch3_multiserial/` へ移し、Xcratch 版のビルド環境を `xcratch/` へ移した
+  （「9. ファイル構成」）。公開 URL と拡張 ID は変わらない
+- ブロックの頭とカテゴリ一覧の絵を、`toBase64URI()` で直すのをやめ、base64 の `icons.js` から読むようにした
+  （「9. ファイル構成」の「絵」）
+- デスクトップ版の作り・名前・ポートの選択ダイアログ・許可を「12. デスクトップ版」に書いた
+
+ブロックの形と動きは変えていない。版は `0.2.0` にした。
 
 ### 2026-10-13 — 2 台目以降の開始を「次のクリックを待つ」にした
 
