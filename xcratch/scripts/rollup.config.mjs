@@ -8,6 +8,11 @@
 //
 // ⚠ 出力のファイル名 (multiserial.mjs) は公開 URL のファイル名になる。
 //   公開したら二度と変えられない。理由は README.md の「公開 URL」。
+//
+// 出力先は docs/ (GitHub Pages の公開元) に直接書く。xcx-example は dist/ に書いて
+// それを公開するが、ここの公開元は main の /docs なので、dist/ を挟む意味が無い
+// (挟むと、毎回 docs/ と同じ中身になる途中のコピーができるだけ)。
+// 試しにビルドしただけでも docs/ は更新される。公開したくない変更はコミットしないこと。
 
 import path from 'path';
 
@@ -57,7 +62,8 @@ export default {
         })
     ],
     output: {
-        file: path.resolve(process.cwd(), './dist/multiserial.mjs'),
+        // xcratch/ の外 (リポジトリ直下の docs/)。.map も同じ場所にできる
+        file: path.resolve(process.cwd(), '../docs/multiserial.mjs'),
         format: 'es',
         sourcemap: true
     },

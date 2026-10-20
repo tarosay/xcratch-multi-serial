@@ -259,8 +259,9 @@
     <div class="blocks">
       <span class="block-tag">8 つまで同時に受信</span>
       <span class="block-tag">ボーレートの指定</span>
-      <span class="block-tag">受け取ったとき</span>
+      <span class="block-tag">1 行受け取ったとき</span>
       <span class="block-tag">1 行読む・最新の行</span>
+      <span class="block-tag">1 バイト読む（0〜255）</span>
       <span class="block-tag">名前と値を読む</span>
       <span class="block-tag">区切りの設定</span>
       <span class="block-tag">数値の取り出し</span>
@@ -270,6 +271,12 @@
       つないだポートは「シリアル通信 1」〜「シリアル通信 8」の番号で区別します。
       <strong>この番号は COM の番号とは関係ありません。</strong>
       どのポートを何番にするかは、開始するときに出るダイアログで選びます。
+    </p>
+    <p>
+      届いたデータは、<strong>行</strong>としても<strong>バイト</strong>としても読めます。
+      <code>1バイト読む</code> は 0〜255 の数を返し、読んでいないバイトが無ければ -1 を返します。
+      行とバイトは別々に溜まるので、片方を読んでももう片方は減りません。
+      <strong><code>1行受け取ったとき</code> は行が届いたときだけ動き、バイトでは動きません。</strong>
     </p>
     <p>
       micro:bit 2 台を同時につなぎ、それぞれから受信できることを、
@@ -298,7 +305,7 @@
   シリアル通信 (1) を ボーレート (115200) で開始する
   シリアル通信 (2) を ボーレート (115200) で開始する
 
-シリアル通信 [1] で受け取ったとき
+シリアル通信 [1] で1行受け取ったとき
   変数1 を ((シリアル通信 (1) の最新の行) の中の数値) にする
   シリアル通信 (1) の受信データを捨てる</pre>
       </li>

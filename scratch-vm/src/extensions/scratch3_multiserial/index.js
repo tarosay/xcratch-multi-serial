@@ -124,9 +124,10 @@ const message = {
         'ja-Hira': 'シリアルつうしん [CH] の じょうたい',
         'en': 'state of serial [CH]'
     },
+    // 行が届いたときだけ動くことが分かるよう「1行」を入れている (バイトでは動かない)
     whenReceived: {
-        'ja': 'シリアル通信 [CH] で受け取ったとき',
-        'ja-Hira': 'シリアルつうしん [CH] で うけとったとき',
+        'ja': 'シリアル通信 [CH] で1行受け取ったとき',
+        'ja-Hira': 'シリアルつうしん [CH] で 1ぎょう うけとったとき',
         'en': 'when serial [CH] receives a line'
     },
     readLine: {
@@ -144,10 +145,22 @@ const message = {
         'ja-Hira': 'シリアルつうしん [CH] の [NAME] の あたい',
         'en': 'value of [NAME] from serial [CH]'
     },
+    // 「バイトが届いている」と取り違えないよう「1行」を入れている。
+    // もとは「受信データがある」で、実際に取り違えた (仕様書「2. ブロック」の受信)
     hasData: {
-        'ja': 'シリアル通信 [CH] に受信データがある',
-        'ja-Hira': 'シリアルつうしん [CH] に じゅしんデータが ある',
-        'en': 'serial [CH] has data?'
+        'ja': 'シリアル通信 [CH] に1行届いている',
+        'ja-Hira': 'シリアルつうしん [CH] に 1ぎょう とどいている',
+        'en': 'serial [CH] has a line?'
+    },
+    hasByte: {
+        'ja': 'シリアル通信 [CH] にバイトが届いている',
+        'ja-Hira': 'シリアルつうしん [CH] に バイトが とどいている',
+        'en': 'serial [CH] has bytes?'
+    },
+    readByte: {
+        'ja': 'シリアル通信 [CH] から1バイト読む',
+        'ja-Hira': 'シリアルつうしん [CH] から 1バイト よむ',
+        'en': 'read a byte from serial [CH]'
     },
     clearData: {
         'ja': 'シリアル通信 [CH] の受信データを捨てる',
@@ -450,6 +463,20 @@ class Scratch3MultiSerial {
                     opcode: 'hasData',
                     text: this._getText('hasData'),
                     blockType: BlockType.BOOLEAN,
+                    arguments: {CH: channelArg}
+                },
+                {
+                    opcode: 'hasByte',
+                    text: this._getText('hasByte'),
+                    blockType: BlockType.BOOLEAN,
+                    arguments: {CH: channelArg}
+                },
+                {
+                    // 値のブロックにしている。拡張機能の引数には変数を選ぶ種類が無いので、
+                    // URB Block Lab の「シリアルから [データ] に読み込む」の形にはできない
+                    opcode: 'readByte',
+                    text: this._getText('readByte'),
+                    blockType: BlockType.REPORTER,
                     arguments: {CH: channelArg}
                 },
                 {
@@ -833,6 +860,16 @@ class Scratch3MultiSerial {
     hasData (args) {
         const index = this._index(args.CH);
         return index >= 0 && this.channels[index].lines.length > 0;
+    }
+
+    hasByte (args) {
+        const index = this._index(args.CH);
+        return index >= 0 && this.channels[index].bytes.length > 0;
+    }
+
+    readByte (args) {
+        const index = this._index(args.CH);
+        return index < 0 ? '' : this.channels[index].takeByte();
     }
 
     clearData (args) {

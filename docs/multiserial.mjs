@@ -19,7 +19,7 @@ var translations = {
 }
 };
 
-var version$1 = "0.2.0";
+var version$1 = "0.3.0";
 
 /**
  * Xcratch の拡張機能一覧に出す情報。
@@ -2916,6 +2916,7 @@ function _arrayLikeToArray$1(r, a) { (null == a || a > r.length) && (a = r.lengt
 //
 // 「シリアル通信 1」〜「シリアル通信 8」の 1 つぶん。
 // 開いた SerialPort から読み続け、行に区切って溜めておく。
+// 届いたバイトも、文字に戻す前の形で別に溜めておく (「1バイト読む」用)。
 //
 // どのポートを開くか (ダイアログ・番号どうしの重複) はここでは決めない。
 // それは index.js の仕事で、ここは渡されたポートを開いて読むだけ。
@@ -2933,6 +2934,12 @@ var LINE_LIMIT = 1000;
  * @type {number}
  */
 var PENDING_LIMIT = 4096;
+
+/**
+ * 読んでいないバイトをいくつまで溜めるか。超えたら古い方から捨てる。
+ * @type {number}
+ */
+var BYTE_LIMIT = 4096;
 
 /**
  * 行の区切りが「改行」であることを表す値。
@@ -2975,6 +2982,8 @@ var SerialChannel = /*#__PURE__*/function () {
       this.latest = '';
       /** @type {Map<string, string>} 「名前:値」の表。名前は小文字にして持つ */
       this.values = new Map();
+      /** @type {Array<number>} 読んでいないバイト (0〜255)。古い順。行とは別に溜める */
+      this.bytes = [];
       this._pending = '';
       this._skipLF = false;
     }
@@ -3187,6 +3196,16 @@ var SerialChannel = /*#__PURE__*/function () {
     }
 
     /**
+     * 溜まっているバイトを古い方から 1 つ取り出す。
+     * @returns {number} 0〜255。無ければ -1 (0 と見分けられるように。C の Serial.read() と同じ)
+     */
+  }, {
+    key: "takeByte",
+    value: function takeByte() {
+      return this.bytes.length > 0 ? this.bytes.shift() : -1;
+    }
+
+    /**
      * 「名前:値」の値を引く。
      * @param {string} name - 名前。大文字と小文字は区別しない
      * @returns {string} 値。まだ届いていなければ空文字
@@ -3236,9 +3255,12 @@ var SerialChannel = /*#__PURE__*/function () {
               return _context4.abrupt("continue", 7);
             case 5:
               // 止めにかかった後に届いた分は、次に開いたポートのものと混ざるので捨てる
-              if (value && !session.stopping) this._feed(this._decoder.decode(value, {
-                stream: true
-              }));
+              if (value && !session.stopping) {
+                this._feedBytes(value);
+                this._feed(this._decoder.decode(value, {
+                  stream: true
+                }));
+              }
             case 6:
               _context4.next = 3;
               break;
@@ -3272,20 +3294,44 @@ var SerialChannel = /*#__PURE__*/function () {
       return _readLoop;
     }()
     /**
-     * 届いた文字列を区切って溜める。
-     * @param {string} text - 届いた文字列
+     * 届いたバイトをそのまま溜める。行と違い、開始した直後にも捨てない
+     * (バイナリには区切りが無く、どこまで捨てればよいか決められないため)。
+     * @param {Uint8Array} chunk - 届いたバイト
      * @returns {void}
      */
     )
   }, {
-    key: "_feed",
-    value: function _feed(text) {
-      var delimiter = this.delimiter;
-      var _iterator = _createForOfIteratorHelper$1(text),
+    key: "_feedBytes",
+    value: function _feedBytes(chunk) {
+      var _iterator = _createForOfIteratorHelper$1(chunk),
         _step;
       try {
         for (_iterator.s(); !(_step = _iterator.n()).done;) {
-          var ch = _step.value;
+          var byte = _step.value;
+          this.bytes.push(byte);
+        }
+      } catch (err) {
+        _iterator.e(err);
+      } finally {
+        _iterator.f();
+      }
+      if (this.bytes.length > BYTE_LIMIT) this.bytes.splice(0, this.bytes.length - BYTE_LIMIT);
+    }
+
+    /**
+     * 届いた文字列を区切って溜める。
+     * @param {string} text - 届いた文字列
+     * @returns {void}
+     */
+  }, {
+    key: "_feed",
+    value: function _feed(text) {
+      var delimiter = this.delimiter;
+      var _iterator2 = _createForOfIteratorHelper$1(text),
+        _step2;
+      try {
+        for (_iterator2.s(); !(_step2 = _iterator2.n()).done;) {
+          var ch = _step2.value;
           if (delimiter === NEWLINE) {
             // CR+LF を 1 つの行の終わりにする。CR と LF が別々の受信に
             // 分かれて届いても空行ができないよう、CR の後かどうかを持ち越す。
@@ -3312,9 +3358,9 @@ var SerialChannel = /*#__PURE__*/function () {
           }
         }
       } catch (err) {
-        _iterator.e(err);
+        _iterator2.e(err);
       } finally {
-        _iterator.f();
+        _iterator2.f();
       }
     }
 
@@ -3483,9 +3529,10 @@ var message = {
     'ja-Hira': 'シリアルつうしん [CH] の じょうたい',
     'en': 'state of serial [CH]'
   },
+  // 行が届いたときだけ動くことが分かるよう「1行」を入れている (バイトでは動かない)
   whenReceived: {
-    'ja': 'シリアル通信 [CH] で受け取ったとき',
-    'ja-Hira': 'シリアルつうしん [CH] で うけとったとき',
+    'ja': 'シリアル通信 [CH] で1行受け取ったとき',
+    'ja-Hira': 'シリアルつうしん [CH] で 1ぎょう うけとったとき',
     'en': 'when serial [CH] receives a line'
   },
   readLine: {
@@ -3503,10 +3550,22 @@ var message = {
     'ja-Hira': 'シリアルつうしん [CH] の [NAME] の あたい',
     'en': 'value of [NAME] from serial [CH]'
   },
+  // 「バイトが届いている」と取り違えないよう「1行」を入れている。
+  // もとは「受信データがある」で、実際に取り違えた (仕様書「2. ブロック」の受信)
   hasData: {
-    'ja': 'シリアル通信 [CH] に受信データがある',
-    'ja-Hira': 'シリアルつうしん [CH] に じゅしんデータが ある',
-    'en': 'serial [CH] has data?'
+    'ja': 'シリアル通信 [CH] に1行届いている',
+    'ja-Hira': 'シリアルつうしん [CH] に 1ぎょう とどいている',
+    'en': 'serial [CH] has a line?'
+  },
+  hasByte: {
+    'ja': 'シリアル通信 [CH] にバイトが届いている',
+    'ja-Hira': 'シリアルつうしん [CH] に バイトが とどいている',
+    'en': 'serial [CH] has bytes?'
+  },
+  readByte: {
+    'ja': 'シリアル通信 [CH] から1バイト読む',
+    'ja-Hira': 'シリアルつうしん [CH] から 1バイト よむ',
+    'en': 'read a byte from serial [CH]'
   },
   clearData: {
     'ja': 'シリアル通信 [CH] の受信データを捨てる',
@@ -3850,6 +3909,22 @@ var Scratch3MultiSerial = /*#__PURE__*/function () {
           opcode: 'hasData',
           text: this._getText('hasData'),
           blockType: BlockType.BOOLEAN,
+          arguments: {
+            CH: channelArg
+          }
+        }, {
+          opcode: 'hasByte',
+          text: this._getText('hasByte'),
+          blockType: BlockType.BOOLEAN,
+          arguments: {
+            CH: channelArg
+          }
+        }, {
+          // 値のブロックにしている。拡張機能の引数には変数を選ぶ種類が無いので、
+          // URB Block Lab の「シリアルから [データ] に読み込む」の形にはできない
+          opcode: 'readByte',
+          text: this._getText('readByte'),
+          blockType: BlockType.REPORTER,
           arguments: {
             CH: channelArg
           }
@@ -4359,6 +4434,18 @@ var Scratch3MultiSerial = /*#__PURE__*/function () {
     value: function hasData(args) {
       var index = this._index(args.CH);
       return index >= 0 && this.channels[index].lines.length > 0;
+    }
+  }, {
+    key: "hasByte",
+    value: function hasByte(args) {
+      var index = this._index(args.CH);
+      return index >= 0 && this.channels[index].bytes.length > 0;
+    }
+  }, {
+    key: "readByte",
+    value: function readByte(args) {
+      var index = this._index(args.CH);
+      return index < 0 ? '' : this.channels[index].takeByte();
     }
   }, {
     key: "clearData",

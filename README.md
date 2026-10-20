@@ -53,7 +53,7 @@ Scratch Multi Serial を起動し、左下の「拡張機能を追加」から�
   シリアル通信 (1) を ボーレート (115200) で開始する
   シリアル通信 (2) を ボーレート (115200) で開始する
 
-シリアル通信 [1] で受け取ったとき
+シリアル通信 [1] で1行受け取ったとき
   変数1 を ((シリアル通信 (1) の最新の行) の中の数値) にする
   シリアル通信 (1) の受信データを捨てる
 ```
@@ -72,8 +72,15 @@ micro:bit の MakeCode 側は `シリアル通信 1行書き出す` か `シリ�
 | 種類 | ブロック |
 |---|---|
 | 開始・終了 | 開始する（ボーレート指定）／ 終了する ／ 開始されている ／ 状態 |
-| 受信 | 受け取ったとき ／ 1行読む ／ 最新の行 ／ [x] の値 ／ 受信データがある ／ 受信データを捨てる ／ 行の区切りを [ ] にする |
+| 受信（行） | 1行受け取ったとき ／ 1行読む ／ 最新の行 ／ [x] の値 ／ 1行届いている ／ 行の区切りを [ ] にする |
+| 受信（バイト） | バイトが届いている ／ 1バイト読む |
+| 受信（共通） | 受信データを捨てる |
 | 取り出し | 区切った [ ] 番目 ／ 区切った項目の数 ／ 中の数値 ／ 区切ってリストに入れる |
+
+**行とバイトは別々に溜まります。** バイトを読んでも行は減らず、行を読んでもバイトは減りません。
+`1バイト読む` は 0〜255 の数を返し、読んでいないバイトが無ければ -1 を返します。
+**`1行受け取ったとき` は行が届いたときだけ動き、バイトでは動きません。** バイトを読むときは、
+`ずっと` の中で `バイトが届いている` を確かめてから `1バイト読む` を使います。
 
 詳しい動きは [`docs/xcratch-multi-serial-blocks-spec.md`](docs/xcratch-multi-serial-blocks-spec.md) にあります。
 
@@ -175,7 +182,7 @@ npm run build
 **このリポジトリの `scratch-vm/` は上流の中身を持たないので、指せません。**
 
 `npm run build` は、本体を `xcratch/src/vm/extensions/block/` へ複製してから
-`xcratch/dist/multiserial.mjs` を作り、それを `docs/` へ置きます。
+`docs/multiserial.mjs` を直接作ります。
 **`docs/` は GitHub Pages の公開元なので、試しにビルドしただけでも公開物が更新されます。**
 公開したくない変更はコミットしないでください。
 
@@ -184,17 +191,22 @@ npm run build
 
 ### Xcratch 版を手元で試す
 
-`xcratch/dist` を CORS 付きで配ります。**配るのは `xcratch/dist` だけにし、絶対パスで渡してください。**
+`docs/` を CORS 付きで、公開 URL と同じ `/xcratch-multi-serial/` の下に配ります。
+**リポジトリの直下へ移ってから実行してください。** `--mount` は `:` で区切るので、
+`D:` を含む絶対パスを書けません。
 
 ```powershell
-npx --yes live-server "D:\git\github\xcratch-multi-serial\xcratch\dist" --host=127.0.0.1 --port=5500 --cors --no-browser
+Set-Location D:\git\github\xcratch-multi-serial
+npx --yes live-server docs --mount=/xcratch-multi-serial:docs --host=127.0.0.1 --port=5500 --cors --no-browser
 ```
 
 Chrome・Edge・Firefox のどれかで次の URL を開きます。
 
 ```
-https://xcratch.github.io/editor/?extension=http://127.0.0.1:5500/multiserial.mjs
+https://xcratch.github.io/editor/?extension=http://127.0.0.1:5500/xcratch-multi-serial/multiserial.mjs
 ```
+
+`http://127.0.0.1` はブラウザが安全な配信元として扱うので、HTTPS の Xcratch からでも証明書なしで読めます。
 
 ### デスクトップ版のビルド
 

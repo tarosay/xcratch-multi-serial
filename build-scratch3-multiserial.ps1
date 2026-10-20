@@ -134,10 +134,10 @@ Get-ChildItem -Path $overlayDir -Force |
     ForEach-Object {
         if ($_.Name -eq "xcratch") {
             # xcratch/ はデスクトップ版のカードが package.json の版を読むだけ。
-            # node_modules / dist / src/vm (リンクと複製) は持ってこない。
+            # node_modules / src/vm (リンクと複製) は持ってこない。
             New-Item -ItemType Directory -Force -Path ".\xcratch" | Out-Null
             Get-ChildItem -Path $_.FullName -Force |
-                Where-Object { @("node_modules", "dist", "src") -notcontains $_.Name } |
+                Where-Object { @("node_modules", "src") -notcontains $_.Name } |
                 ForEach-Object { Copy-Item -Path $_.FullName -Destination ".\xcratch\" -Recurse -Force }
         } else {
             Copy-Item -Path $_.FullName -Destination ".\" -Recurse -Force

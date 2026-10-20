@@ -2,6 +2,7 @@
 //
 // 「シリアル通信 1」〜「シリアル通信 8」の 1 つぶん。
 // 開いた SerialPort から読み続け、行に区切って溜めておく。
+// 届いたバイトも、文字に戻す前の形で別に溜めておく (「1バイト読む」用)。
 //
 // どのポートを開くか (ダイアログ・番号どうしの重複) はここでは決めない。
 // それは index.js の仕事で、ここは渡されたポートを開いて読むだけ。
@@ -19,6 +20,12 @@ const LINE_LIMIT = 1000;
  * @type {number}
  */
 const PENDING_LIMIT = 4096;
+
+/**
+ * 読んでいないバイトをいくつまで溜めるか。超えたら古い方から捨てる。
+ * @type {number}
+ */
+const BYTE_LIMIT = 4096;
 
 /**
  * 行の区切りが「改行」であることを表す値。
@@ -60,6 +67,8 @@ class SerialChannel {
         this.latest = '';
         /** @type {Map<string, string>} 「名前:値」の表。名前は小文字にして持つ */
         this.values = new Map();
+        /** @type {Array<number>} 読んでいないバイト (0〜255)。古い順。行とは別に溜める */
+        this.bytes = [];
         this._pending = '';
         this._skipLF = false;
     }
@@ -180,6 +189,14 @@ class SerialChannel {
     }
 
     /**
+     * 溜まっているバイトを古い方から 1 つ取り出す。
+     * @returns {number} 0〜255。無ければ -1 (0 と見分けられるように。C の Serial.read() と同じ)
+     */
+    takeByte () {
+        return this.bytes.length > 0 ? this.bytes.shift() : -1;
+    }
+
+    /**
      * 「名前:値」の値を引く。
      * @param {string} name - 名前。大文字と小文字は区別しない
      * @returns {string} 値。まだ届いていなければ空文字
@@ -206,7 +223,10 @@ class SerialChannel {
                     const {value, done} = await session.reader.read();
                     if (done) break;
                     // 止めにかかった後に届いた分は、次に開いたポートのものと混ざるので捨てる
-                    if (value && !session.stopping) this._feed(this._decoder.decode(value, {stream: true}));
+                    if (value && !session.stopping) {
+                        this._feedBytes(value);
+                        this._feed(this._decoder.decode(value, {stream: true}));
+                    }
                 }
             } catch (e) {
                 if (!session.stopping) console.warn('[multiSerial] read error:', e);
@@ -217,6 +237,17 @@ class SerialChannel {
         }
         // 止めたのではないのに抜けた = 切れた
         if (!session.stopping) this._lost(session);
+    }
+
+    /**
+     * 届いたバイトをそのまま溜める。行と違い、開始した直後にも捨てない
+     * (バイナリには区切りが無く、どこまで捨てればよいか決められないため)。
+     * @param {Uint8Array} chunk - 届いたバイト
+     * @returns {void}
+     */
+    _feedBytes (chunk) {
+        for (const byte of chunk) this.bytes.push(byte);
+        if (this.bytes.length > BYTE_LIMIT) this.bytes.splice(0, this.bytes.length - BYTE_LIMIT);
     }
 
     /**
