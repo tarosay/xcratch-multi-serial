@@ -3,14 +3,14 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>マルチシリアル接続 — Xcratch で複数のシリアルポートを同時に</title>
-<meta name="description" content="Xcratch から複数のシリアルポートを同時に扱う拡張機能です。USB でつないだ micro:bit を何台もつなぎ、それぞれから届くデータをブロックで受け取れます。インストール不要で、Chrome・Edge・Firefox で使えます。">
+<title>マルチシリアル接続 — Xcratch / Scratch Desktop で複数のシリアルポートを同時に</title>
+<meta name="description" content="Scratch 3.0 から複数のシリアルポートを同時に扱う拡張機能です。USB でつないだ micro:bit を何台もつなぎ、それぞれから届くデータをブロックで受け取れます。インストール不要の Xcratch 版（Chrome・Edge・Firefox）と、インストーラで入れる Scratch Desktop 版（Windows）があり、ブロックは共通です。">
 
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ja_JP">
 <meta property="og:site_name" content="xcratch-multi-serial">
-<meta property="og:title" content="マルチシリアル接続 — Xcratch で複数のシリアルポートを同時に">
-<meta property="og:description" content="USB でつないだ micro:bit を何台もつなぎ、それぞれから届くデータをブロックで受け取れる Xcratch 拡張機能です。インストール不要です。">
+<meta property="og:title" content="マルチシリアル接続 — Xcratch / Scratch Desktop で複数のシリアルポートを同時に">
+<meta property="og:description" content="USB でつないだ micro:bit を何台もつなぎ、それぞれから届くデータをブロックで受け取れる拡張機能です。インストール不要の Xcratch 版と、インストーラで入れる Scratch Desktop 版があります。">
 <meta property="og:url" content="https://tarosay.github.io/xcratch-multi-serial/">
 <meta name="twitter:card" content="summary">
 <link rel="canonical" href="https://tarosay.github.io/xcratch-multi-serial/">
@@ -70,6 +70,7 @@
   .cta:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(0,0,0,0.3); }
   .cta-arrow { color: var(--xcratch); }
   .cta-note { font-size: 0.82rem; color: #c9d3dc; margin-top: 12px; }
+  .cta-note a { color: #fff; }
 
   main { max-width: 860px; margin: 0 auto; padding: 40px 24px 10px; }
   section {
@@ -82,6 +83,7 @@
     border-left: 5px solid var(--slate);
     line-height: 1.4;
   }
+  section > h3 { font-size: 1rem; color: var(--slate-dk); margin: 18px 0 6px; }
   p { margin-bottom: 12px; }
   ul, ol { margin: 0 0 12px 1.4em; }
   li { margin-bottom: 5px; }
@@ -131,6 +133,15 @@
   .url-copy:hover { background: var(--slate-dk); }
   .url-copy:disabled { cursor: default; opacity: 0.85; }
 
+  .ways { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 12px; }
+  .way {
+    flex: 1 1 280px; min-width: 0;
+    border: 1px solid var(--line); border-radius: 10px;
+    padding: 14px 18px 4px; background: var(--ground);
+  }
+  .way h3 { font-size: 1rem; color: var(--slate-dk); margin-bottom: 2px; }
+  .way-note { font-size: 0.82rem; color: var(--ink-soft); font-weight: 700; margin-bottom: 8px; }
+
   .blocks { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
   .block-tag {
     background: var(--slate-lt); color: var(--slate-dk);
@@ -138,6 +149,13 @@
     font-size: 0.82rem; font-weight: 700;
     padding: 4px 12px; border-radius: 6px;
   }
+
+  .figure { margin: 4px 0 14px; }
+  .figure img {
+    display: block; max-width: 100%; height: auto;
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  .figure figcaption { font-size: 0.82rem; color: var(--ink-soft); margin-top: 6px; }
 
   .warn {
     background: var(--warn-bg); border-left: 4px solid var(--warn-line);
@@ -166,18 +184,19 @@
 <header>
   <div class="inner hero">
     <div class="hero-text">
-      <div class="badge">Xcratch 拡張機能</div>
+      <div class="badge">Scratch 3.0 拡張機能</div>
       <h1>マルチシリアル接続</h1>
       <p class="lead">
         USB でつないだ <strong>micro:bit を何台も同時に</strong>つなぎ、
         それぞれから届くデータを Scratch のブロックで受け取れます。
-        インストールは要りません。
+        インストール不要の Xcratch 版と、Scratch Desktop に組み込んだデスクトップ版（Windows）があります。
       </p>
       <a class="cta" href="https://xcratch.github.io/editor/?extension=https://tarosay.github.io/xcratch-multi-serial/multiserial.mjs">
         Xcratch で開く <span class="cta-arrow">→</span>
       </a>
       <div class="cta-note">
-        押すと拡張機能を読み込んだ状態で Xcratch が開きます（Chrome / Edge / Firefox）。
+        押すと拡張機能を読み込んだ状態で Xcratch が開きます（Chrome / Edge / Firefox）。<br>
+        デスクトップ版は <a href="#desktop">下のデスクトップ版の説明</a>から入れられます。
       </div>
     </div>
     <div class="hero-art" aria-hidden="true">
@@ -209,6 +228,33 @@
 <main>
 
   <section>
+    <h2>2 つの使い方</h2>
+    <div class="ways">
+      <div class="way">
+        <h3>Xcratch 版</h3>
+        <p class="way-note">インストール不要 / Chrome・Edge・Firefox</p>
+        <p>
+          Xcratch のエディタに拡張機能の URL を読み込ませて使います。
+          入れるものは何もありません。
+        </p>
+        <p><a href="#how">使い方を見る</a></p>
+      </div>
+      <div class="way">
+        <h3>Scratch Multi Serial（デスクトップ版）</h3>
+        <p class="way-note">インストーラ / Windows</p>
+        <p>
+          Scratch Desktop に組み込んだ版です。インストーラか、
+          展開するだけの ZIP を
+          <a href="https://github.com/tarosay/xcratch-multi-serial/releases/latest">Releases</a>
+          から入れます。
+        </p>
+        <p><a href="#desktop">くわしく見る</a></p>
+      </div>
+    </div>
+    <p>ブロックは Xcratch 版とデスクトップ版で共通です。</p>
+  </section>
+
+  <section>
     <h2>できること</h2>
     <div class="blocks">
       <span class="block-tag">8 つまで同時に受信</span>
@@ -223,11 +269,11 @@
     <p>
       つないだポートは「シリアル通信 1」〜「シリアル通信 8」の番号で区別します。
       <strong>この番号は COM の番号とは関係ありません。</strong>
-      どのポートを何番にするかは、ブラウザが出すダイアログで選びます。
+      どのポートを何番にするかは、開始するときに出るダイアログで選びます。
     </p>
     <p>
-      micro:bit 2 台を同時につなぎ、それぞれから受信できることを確認しています
-      （3 台以上は確かめていません）。
+      micro:bit 2 台を同時につなぎ、それぞれから受信できることを、
+      Xcratch 版とデスクトップ版の両方で確認しています（3 台以上は確かめていません）。
     </p>
   </section>
 
@@ -236,6 +282,8 @@
     <ol class="steps">
       <li>
         <strong>Chrome・Edge・Firefox のどれかで Xcratch を開きます。</strong>
+        （デスクトップ版は、Scratch Multi Serial を起動し、左下の「拡張機能を追加」から
+        「マルチシリアル接続」を選びます。手順 2 に進んでください。）
         上の「Xcratch で開く」を押すと、拡張機能を読み込んだ状態で開きます。
         自分で読み込むときは、Xcratch の「拡張機能を追加 → Extension Loader」に
         次の URL を入れます。
@@ -264,6 +312,7 @@
       <strong>⚠ 1 回のクリックで出せるダイアログは 1 つだけです。</strong>
       2 つ目の「開始する」は「画面をクリックしてください」で待っているので、
       画面をクリックしてください。ブラウザの決まりによるものです。
+      デスクトップ版も中身はブラウザ（Electron）なので、同じです。
     </div>
     <p>
       うまくいかないときは、<code>シリアル通信 (1) の状態</code> を「言う」などで表示すると、
@@ -271,12 +320,57 @@
     </p>
   </section>
 
+  <section id="desktop">
+    <h2>Scratch Multi Serial（デスクトップ版）</h2>
+    <p>
+      Scratch Desktop にマルチシリアル接続を組み込んだ版です（Windows）。
+      ブロックは Xcratch 版と同じものを共有していて、できることは変わりません。
+      ブラウザは要りません。
+    </p>
+    <p>
+      <a href="https://github.com/tarosay/xcratch-multi-serial/releases/latest">Releases</a>
+      から入れられます。インストーラ（<code>Scratch-MultiSerial-…-Setup.exe</code>）と、
+      展開するだけで動く ZIP（<code>…-portable.zip</code>）の 2 つがあります。
+      ZIP は展開して、中の <code>Scratch Multi Serial.exe</code> を起動します。
+    </p>
+    <p>
+      <strong>公式の Scratch Desktop を入れていても上書きされません。</strong>
+      別のアプリとして入るので、並べて使えます。
+    </p>
+    <p>
+      起動したら、左下の「拡張機能を追加」から「マルチシリアル接続」を選びます。
+    </p>
+    <p>
+      <strong>違うのは、ポートを選ぶダイアログの見た目だけです。</strong>
+      ブラウザのダイアログの代わりに、ポートの名前を並べたダイアログが出ます。
+      使うポートをクリックしてください。
+    </p>
+<pre>シリアルポートを選んでください
+
+  com0com - serial port emulator (COM8)
+  com0com - serial port emulator (COM9)
+  キャンセル</pre>
+    <ul>
+      <li>「キャンセル」を押すか、ダイアログを閉じると、<code>状態</code> は「選ばれませんでした」になります</li>
+      <li>ポートが 1 つも無いときは「シリアルポートが見つかりません」と出ます。機器をつないでから、もう一度開始してください</li>
+      <li><strong>ダイアログを開いている間にケーブルを挿しても、一覧には出ません。</strong>
+        「キャンセル」を押して、もう一度開始してください</li>
+    </ul>
+    <p>
+      <strong>Xcratch 版で保存した作品（<code>.sb3</code>）は、デスクトップ版でそのまま開けます。</strong>
+      micro:bit 2 台をつないで、そのまま動くことを確認しています。
+    </p>
+    <p>
+      ビルド方法は <a href="https://github.com/tarosay/xcratch-multi-serial">GitHub リポジトリ</a> にあります。
+    </p>
+  </section>
+
   <section>
     <h2>micro:bit の側</h2>
     <p>
       MakeCode の <code>シリアル通信 1行書き出す</code> か
-      <code>シリアル通信 名前と値を書き出す</code> で送ります。
-      <code>名前と値を書き出す</code> で送った値は、
+      <code>シリアル通信 名前と数値を書き出す</code> で送ります。
+      <code>名前と数値を書き出す</code> で送った値は、
       <code>シリアル通信 (1) の [x] の値</code> で名前を指定して読めます。
     </p>
     <p>
@@ -287,16 +381,34 @@
       <strong>⚠ MakeCode の <code>シリアル通信</code> で日本語を送ると、文字化けします。</strong>
       英数字で送ってください。
     </div>
+
+    <h3>参考: 無線で受け取った値を USB へ流すプログラム</h3>
+    <p>
+      micro:bit 側のプログラムの一例です。
+      ほかの micro:bit から無線（グループ 191）で受け取った名前と値を、
+      そのまま USB のシリアル通信へ書き出します。
+      A ボタンで書き出しを始め、B ボタンで止めます（起動したときは書き出す状態です）。
+    </p>
+    <figure class="figure">
+      <img src="microbit-radio-relay.jpg" width="705" height="654" loading="lazy"
+           alt="MakeCode のブロック。最初だけ: シリアル通信の通信先を USB_TX・USB_RX・115200 に変更し、無線のグループを 191 に設定する。無線で受信したとき: USB送信が 1 なら、シリアル通信で名前と数値を書き出す。ボタン A で USB送信を 1、ボタン B で 0 にする。">
+      <figcaption>MakeCode のブロック</figcaption>
+    </figure>
+    <p>
+      MakeCode で「読み込む → URL から読み込む」に次の URL を貼ると開けます。<br>
+      <a href="https://github.com/tarosay/musen_com_kasikudo_1">https://github.com/tarosay/musen_com_kasikudo_1</a>
+    </p>
   </section>
 
   <section>
     <h2>必要なもの</h2>
     <ul>
       <li>USB でつなぐシリアル機器（micro:bit など）と USB ケーブル</li>
-      <li><strong>Chrome・Edge、または Firefox 151 以降（パソコン版）</strong>。
+      <li><strong>Xcratch 版: Chrome・Edge、または Firefox 151 以降（パソコン版）</strong>。
         Web Serial API を使います。Safari は対応していません（2026年10月時点）</li>
+      <li><strong>デスクトップ版: Windows</strong>。ブラウザは要りません。macOS / Linux 版はありません</li>
     </ul>
-    <p>それ以外に必要なものはありません。インストールもアカウントも不要です。</p>
+    <p>それ以外に必要なものはありません。Xcratch 版はインストールもアカウントも不要です。</p>
   </section>
 
   <section>
@@ -318,6 +430,7 @@
   <div class="inner">
     <ul>
       <li><a href="https://github.com/tarosay/xcratch-multi-serial">GitHub — tarosay/xcratch-multi-serial</a></li>
+      <li><a href="https://github.com/tarosay/xcratch-multi-serial/releases/latest">デスクトップ版のダウンロード（Releases）</a></li>
       <li><a href="https://xcratch.github.io/">Xcratch</a></li>
     </ul>
   </div>

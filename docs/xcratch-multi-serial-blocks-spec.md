@@ -307,7 +307,7 @@ MakeCode のリファレンス（`serial.setBaudRate`）にも、既定値は 11
 
 MakeCode の `シリアル通信 1行書き出す`（`serial.writeLine`）は、行を 32 バイトの区切りに揃えるため、
 末尾に空白を詰めて送る（pxt-microbit の `libs/core/serial.ts`、`writeLinePadding`）。
-`名前と値を書き出す`（`serial.writeValue`）も中で `writeLine` を使う。
+`名前と数値を書き出す`（`serial.writeValue`）も中で `writeLine` を使う。
 取り除かないと、`A` を送っても `(1行読む) = A` が成り立たない（実機で `x:-36` の後ろに空白が付いていた）。
 
 ### 開始した直後の 1 行は捨てる
